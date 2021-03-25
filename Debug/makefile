@@ -4,7 +4,7 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS
+CG_TOOL_ROOT := D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -25,9 +25,9 @@ ORDERED_OBJS += \
 "./main.obj" \
 "./sin_tab.obj" \
 $(GEN_CMDS__FLAG) \
--l"D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib/rts2800_fpu32.lib" \
+-l"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_common/cmd/2837xS_RAM_lnk_cpu1_USB.cmd" \
+-l"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib/rts2800_fpu32.lib" \
 -l"D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/lib/Solar_Lib_Float.lib" \
--l"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_common/cmd/2837xS_FLASH_lnk_cpu1_far.cmd" \
 -l"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/cmd/F2837xS_Headers_nonBIOS.cmd" \
 -llibc.a \
 
@@ -156,14 +156,14 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 PLL-ISEE.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: C2000 Linker'
-	"D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi -z -m"PLL-ISEE.map" --stack_size=0x200 --warn_sections -i"D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib" -i"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_common/cmd" -i"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/cmd" -i"D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="PLL-ISEE_linkInfo.xml" --rom_model -o "PLL-ISEE.out" $(ORDERED_OBJS)
+	"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi -z -m"PLL-ISEE.map" --stack_size=0x200 --warn_sections -i"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib" -i"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_common/cmd" -i"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/cmd" -i"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="PLL-ISEE_linkInfo.xml" --rom_model -o "PLL-ISEE.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 PLL-ISEE.hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: C2000 Hex Utility'
-	"D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/bin/hex2000"  -o "PLL-ISEE.hex" $(EXE_OUTPUTS__QUOTED)
+	"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/bin/hex2000"  -o "PLL-ISEE.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 

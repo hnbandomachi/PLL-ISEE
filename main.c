@@ -15,6 +15,8 @@ SPLL_1ph_SOGI_F spll1;
 float GrisMeas = 0;
 float index = 0;
 
+void Gpio_setup1(void);
+
 __interrupt void cpu_timer0_isr(void);
 
 void main(void)
@@ -31,8 +33,11 @@ void main(void)
     IFR = 0x0000;
 
     InitPieVectTable();
+    Gpio_setup1();
+
 
     EALLOW;  // This is needed to write to EALLOW protected registers
+
     PieVectTable.TIMER0_INT = &cpu_timer0_isr;
     EDIS;
 
@@ -60,8 +65,32 @@ void main(void)
     }
 }
 
+void Gpio_setup1(void)
+{
+   //
+   // These can be combined into single statements for improved
+   // code efficiency.
+   //
+
+   //
+   // Enable PWM1-3 on GPIO0-GPIO5
+   //
+   EALLOW;
+   //
+   // Enable an GPIO output on GPIO2, set it low
+   //
+   GpioCtrlRegs.GPAPUD.bit.GPIO2 = 0;   // Enable pullup on GPIO71
+   GpioDataRegs.GPASET.bit.GPIO2 = 1;   // Load output latch
+   GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 0;  // GPIO71 = GPIO71
+   GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;   // GPIO71 = output
+   EDIS;
+}
+
 __interrupt void cpu_timer0_isr(void)
 {
+
+    GpioDataRegs.GPASET.bit.GPIO2 = 1;   // Load output latch
+
     index = index + 5.12;
     if(index >= 2048) index = 0;
     GrisMeas = sin_tab[(int)index];
@@ -70,6 +99,10 @@ __interrupt void cpu_timer0_isr(void)
 
     DacaRegs.DACVALS.all = spll1.theta[0] * 651;
     DacbRegs.DACVALS.all = GrisMeas * 1000 + 1500;
+//    float hnb = index/17.0;
+
+    GpioDataRegs.GPACLEAR.bit.GPIO2=1;   // Load output latch
+
 
     CpuTimer0.InterruptCount++;
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;

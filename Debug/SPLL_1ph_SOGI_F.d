@@ -2,14 +2,14 @@
 
 SPLL_1ph_SOGI_F.obj: ../SPLL_1ph_SOGI_F.c
 SPLL_1ph_SOGI_F.obj: D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/Solar_F.h
-SPLL_1ph_SOGI_F.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/math.h
-SPLL_1ph_SOGI_F.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_ti_config.h
-SPLL_1ph_SOGI_F.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/linkage.h
-SPLL_1ph_SOGI_F.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_defs.h
-SPLL_1ph_SOGI_F.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_types.h
-SPLL_1ph_SOGI_F.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/cdefs.h
-SPLL_1ph_SOGI_F.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_types.h
-SPLL_1ph_SOGI_F.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_limits.h
+SPLL_1ph_SOGI_F.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/math.h
+SPLL_1ph_SOGI_F.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_ti_config.h
+SPLL_1ph_SOGI_F.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/linkage.h
+SPLL_1ph_SOGI_F.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_defs.h
+SPLL_1ph_SOGI_F.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_types.h
+SPLL_1ph_SOGI_F.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/cdefs.h
+SPLL_1ph_SOGI_F.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_types.h
+SPLL_1ph_SOGI_F.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_limits.h
 SPLL_1ph_SOGI_F.obj: D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/ABC_DQ0_POS_F.h
 SPLL_1ph_SOGI_F.obj: D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/ABC_DQ0_NEG_F.h
 SPLL_1ph_SOGI_F.obj: D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/CLARKE_F.h
@@ -38,14 +38,14 @@ SPLL_1ph_SOGI_F.obj: D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/S
 
 ../SPLL_1ph_SOGI_F.c: 
 D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/Solar_F.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/math.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_ti_config.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/linkage.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_defs.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_types.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/cdefs.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_types.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_limits.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/math.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_ti_config.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/linkage.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_defs.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_types.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/cdefs.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_types.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_limits.h: 
 D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/ABC_DQ0_POS_F.h: 
 D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/ABC_DQ0_NEG_F.h: 
 D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/include/CLARKE_F.h: 
