@@ -29,7 +29,6 @@ $(GEN_CMDS__FLAG) \
 -l"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib/rts2800_fpu32.lib" \
 -l"D:/ti/controlSUITE/libs/app_libs/solar/v1.2/float/lib/Solar_Lib_Float.lib" \
 -l"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/cmd/F2837xS_Headers_nonBIOS.cmd" \
--llibc.a \
 
 -include ../makefile.init
 
@@ -156,7 +155,7 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 PLL-ISEE.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: C2000 Linker'
-	"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi -z -m"PLL-ISEE.map" --stack_size=0x200 --warn_sections -i"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib" -i"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_common/cmd" -i"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/cmd" -i"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="PLL-ISEE_linkInfo.xml" --rom_model -o "PLL-ISEE.out" $(ORDERED_OBJS)
+	"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --advice:performance=all --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi -z -m"PLL-ISEE.map" --stack_size=0x200 --warn_sections -i"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib" -i"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_common/cmd" -i"D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/cmd" -i"D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="PLL-ISEE_linkInfo.xml" --rom_model -o "PLL-ISEE.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 

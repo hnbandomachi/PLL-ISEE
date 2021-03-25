@@ -2,20 +2,20 @@
 
 F2837xS_GlobalVariableDefs.obj: ../F2837xS_GlobalVariableDefs.c
 F2837xS_GlobalVariableDefs.obj: D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/include/F2837xS_device.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/assert.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_ti_config.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/linkage.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdarg.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_types.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/cdefs.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_types.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdbool.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stddef.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdint.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_stdint40.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/stdint.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_stdint.h
-F2837xS_GlobalVariableDefs.obj: D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_stdint.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/assert.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_ti_config.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/linkage.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdarg.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_types.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/cdefs.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_types.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdbool.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stddef.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdint.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_stdint40.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/stdint.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_stdint.h
+F2837xS_GlobalVariableDefs.obj: D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_stdint.h
 F2837xS_GlobalVariableDefs.obj: D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/include/F2837xS_adc.h
 F2837xS_GlobalVariableDefs.obj: D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/include/F2837xS_analogsubsys.h
 F2837xS_GlobalVariableDefs.obj: D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/include/F2837xS_cla.h
@@ -50,20 +50,20 @@ F2837xS_GlobalVariableDefs.obj: D:/ti/controlSUITE/device_support/F2837xS/v210/F
 
 ../F2837xS_GlobalVariableDefs.c: 
 D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/include/F2837xS_device.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/assert.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_ti_config.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/linkage.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdarg.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_types.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/cdefs.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_types.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdbool.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stddef.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdint.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_stdint40.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/stdint.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_stdint.h: 
-D:/ti/ccsv10/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_stdint.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/assert.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_ti_config.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/linkage.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdarg.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_types.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/cdefs.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_types.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdbool.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stddef.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/stdint.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/_stdint40.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/stdint.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/machine/_stdint.h: 
+D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include/sys/_stdint.h: 
 D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/include/F2837xS_adc.h: 
 D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/include/F2837xS_analogsubsys.h: 
 D:/ti/controlSUITE/device_support/F2837xS/v210/F2837xS_headers/include/F2837xS_cla.h: 

@@ -1,8 +1,8 @@
 // voltage-sensor  --> ADCA1
 // xuat theta      --> ADAA0
 
-#define RED                100U
-#define FED                100U
+#define RED                50U
+#define FED                50U
 #define DB_UP          1
 
 #include "F28x_Project.h"
@@ -11,7 +11,7 @@
 extern float sin_tab[];
 
 #define GRID_FREQ 50
-#define ISR_FREQUENCY 50000
+#define ISR_FREQUENCY 25000
 #define PI 3.14159265359
 #define Interrupt_FREQ 1000
 SPLL_1ph_SOGI_F spll1;
@@ -29,7 +29,7 @@ Uint16 EPwm6_DB_Direction;
 float GrisMeas = 0;
 float index = 0, m = 0.8;
 
-int role = 1;
+int role = 1, hnb = 0;
 
 
 //
@@ -45,7 +45,12 @@ __interrupt void epwm2_isr(void);
 void main(void)
 {
     InitSysCtrl();
-
+    //
+    // enable PWM7, PWM8 and PWM6
+    //
+    CpuSysRegs.PCLKCR2.bit.EPWM7=1;
+    CpuSysRegs.PCLKCR2.bit.EPWM8=1;
+    CpuSysRegs.PCLKCR2.bit.EPWM6=1;
     //
     // Step 2. Initialize GPIO:
     // This example function is found in the F2837xS_Gpio.c file and
@@ -55,12 +60,7 @@ void main(void)
     GPIO_SetupPinMux(65, GPIO_MUX_CPU1, 0);
     GPIO_SetupPinOptions(65, GPIO_OUTPUT, GPIO_PUSHPULL);
 
-    //
-    // enable PWM7, PWM8 and PWM9
-    //
-    CpuSysRegs.PCLKCR2.bit.EPWM7=1;
-    CpuSysRegs.PCLKCR2.bit.EPWM8=1;
-    CpuSysRegs.PCLKCR2.bit.EPWM9=1;
+
 
     //
     // For this case just init GPIO pins for ePWM7, ePWM8, ePWM9
@@ -92,11 +92,19 @@ void main(void)
 
     InitCpuTimers();
     ConfigCpuTimer(&CpuTimer0, 200, 20);
+
+
+    // Step 4. Initialize the Device Peripherals:
+    EALLOW;
+    CpuSysRegs.PCLKCR0.bit.TBCLKSYNC =0;
+    EDIS;
+
     InitEPwm2Example();
 
     EALLOW;
     CpuSysRegs.PCLKCR0.bit.TBCLKSYNC =1;
     EDIS;
+
 
     EPwm7TimerIntCount = 0;
     EPwm8TimerIntCount = 0;
@@ -106,21 +114,19 @@ void main(void)
     CpuTimer0Regs.TCR.all = 0x4000;
 
     IER |= M_INT1;
-    IER |= M_INT13;
-    IER |= M_INT14;
-//    IER |= M_INT3;
+    IER |= M_INT3;
 
     //
     // Enable TINT0 in the PIE: Group 1 interrupt 7
     //
     PieCtrlRegs.PIEIER1.bit.INTx7 = 1;
 
-    //
-    // Enable EPWM INTn in the PIE: Group 3 interrupt 1-3
-    //
-//    PieCtrlRegs.PIEIER3.bit.INTx7 = 1;
-//    PieCtrlRegs.PIEIER3.bit.INTx8 = 1;
-//    PieCtrlRegs.PIEIER3.bit.INTx9 = 1;
+
+//     Enable EPWM INTn in the PIE: Group 3 interrupt 1-3
+
+    PieCtrlRegs.PIEIER3.bit.INTx7 = 1;
+    PieCtrlRegs.PIEIER3.bit.INTx8 = 1;
+    PieCtrlRegs.PIEIER3.bit.INTx6 = 1;
 
     EINT;  // Enable Global interrupt INTM
     ERTM;  // Enable Global realtime interrupt DBGM
@@ -247,6 +253,39 @@ void InitEPwm2Example()
 __interrupt void epwm2_isr(void)
 {
 
+    if(role) GpioDataRegs.GPASET.bit.GPIO20 = 1;   // Load output latch
+    else GpioDataRegs.GPACLEAR.bit.GPIO20=1;   // Load output latch
+
+    GpioDataRegs.GPASET.bit.GPIO2 = 1;   // Load output latch
+
+    index = index + 4.096;
+    if(index >= 2048) index = 0;
+    GrisMeas = m*sin_tab[(int)index];
+    spll1.u[0] = GrisMeas;
+
+    if(GrisMeas >= 0)
+    {
+        EPwm6Regs.CMPA.bit.CMPA = 0;
+    }
+    else
+    {
+        EPwm6Regs.CMPA.bit.CMPA = 2000;
+    }
+    if(GrisMeas < 0) GrisMeas += 1;
+    EPwm7Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-1.0);    // Set compare A value
+    EPwm8Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-0.0);     // Set compare A value
+
+    SPLL_1ph_SOGI_F_FUNC(&spll1);
+
+    DacaRegs.DACVALS.all = spll1.theta[0] * 651;
+    DacbRegs.DACVALS.all = GrisMeas * 1000 + 1500;
+
+
+
+//    float hnb = index/17.0;
+
+    GpioDataRegs.GPACLEAR.bit.GPIO2=1;   // Load output latch
+
 
     EPwm7TimerIntCount++;
 
@@ -264,37 +303,6 @@ __interrupt void epwm2_isr(void)
 __interrupt void cpu_timer0_isr(void)
 {
 
-    if(role) GpioDataRegs.GPASET.bit.GPIO20 = 1;   // Load output latch
-    else GpioDataRegs.GPACLEAR.bit.GPIO20=1;   // Load output latch
-
-    GpioDataRegs.GPASET.bit.GPIO2 = 1;   // Load output latch
-
-    if(GrisMeas > 0)
-    {
-        EPwm6Regs.CMPA.bit.CMPA = 0;
-    }
-    else
-    {
-        EPwm6Regs.CMPA.bit.CMPA = 2000;
-    }
-    if(GrisMeas < 0) GrisMeas += 1;
-    EPwm7Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-1.0);    // Set compare A value
-    EPwm8Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-0.0);     // Set compare A value
-
-    index = index + 2.048;
-    if(index >= 2048) index = 0;
-    GrisMeas = m*sin_tab[(int)index];
-    spll1.u[0] = GrisMeas;
-    SPLL_1ph_SOGI_F_FUNC(&spll1);
-
-    DacaRegs.DACVALS.all = spll1.theta[0] * 651;
-    DacbRegs.DACVALS.all = GrisMeas * 1000 + 1500;
-
-
-
-//    float hnb = index/17.0;
-
-    GpioDataRegs.GPACLEAR.bit.GPIO2=1;   // Load output latch
 
 
     CpuTimer0.InterruptCount++;
@@ -321,5 +329,4 @@ void configureDAC(void)
     DaccRegs.DACOUTEN.bit.DACOUTEN = 1;         // Enable DAC
     EDIS;
 }
-
 
