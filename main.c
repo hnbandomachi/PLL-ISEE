@@ -21,13 +21,13 @@ SPLL_1ph_SOGI_F spll1;
 //
 Uint32 EPwm7TimerIntCount;
 Uint32 EPwm8TimerIntCount;
-Uint32 EPwm9TimerIntCount;
+Uint32 EPwm6TimerIntCount;
 Uint16 EPwm7_DB_Direction;
 Uint16 EPwm8_DB_Direction;
-Uint16 EPwm9_DB_Direction;
+Uint16 EPwm6_DB_Direction;
 
 float GrisMeas = 0;
-float index = 0;
+float index = 0, m = 0.8;
 
 int role = 1;
 
@@ -68,9 +68,9 @@ void main(void)
     //
     InitEPwm7Gpio();
     InitEPwm8Gpio();
-    InitEPwm9Gpio();
+    InitEPwm6Gpio();
 
-    ConfigureDAC();
+    configureDAC();
     DINT;
 
     InitPieCtrl();
@@ -100,7 +100,7 @@ void main(void)
 
     EPwm7TimerIntCount = 0;
     EPwm8TimerIntCount = 0;
-    EPwm9TimerIntCount = 0;
+    EPwm6TimerIntCount = 0;
 
 
     CpuTimer0Regs.TCR.all = 0x4000;
@@ -171,9 +171,9 @@ void InitEPwm2Example()
     EPwm8Regs.TBPHS.bit.TBPHS = 0x0000;           // Phase is 0
     EPwm8Regs.TBCTR = 0x0000;                     // Clear counter
 
-    EPwm9Regs.TBPRD = 2000;                       // Set timer period
-    EPwm9Regs.TBPHS.bit.TBPHS = 0x0000;           // Phase is 0
-    EPwm9Regs.TBCTR = 0x0000;                     // Clear counter
+    EPwm6Regs.TBPRD = 2000;                       // Set timer period
+    EPwm6Regs.TBPHS.bit.TBPHS = 0x0000;           // Phase is 0
+    EPwm6Regs.TBCTR = 0x0000;                     // Clear counter
 
     //
     // Setup TBCLK
@@ -190,10 +190,10 @@ void InitEPwm2Example()
     EPwm8Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
                                                    // the scope
 
-    EPwm9Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // Count up
-    EPwm9Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Disable phase loading
-    EPwm9Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // Clock ratio to SYSCLKOUT
-    EPwm9Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
+    EPwm6Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // Count up
+    EPwm6Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Disable phase loading
+    EPwm6Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // Clock ratio to SYSCLKOUT
+    EPwm6Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
                                                    // the scope
 
     //
@@ -201,7 +201,7 @@ void InitEPwm2Example()
     //
     EPwm7Regs.CMPA.bit.CMPA = 1000;
     EPwm8Regs.CMPA.bit.CMPA = 1000;
-    EPwm9Regs.CMPA.bit.CMPA = 1000;
+    EPwm6Regs.CMPA.bit.CMPA = 1000;
 
     //
     // Set actions
@@ -212,11 +212,8 @@ void InitEPwm2Example()
     EPwm8Regs.AQCTLA.bit.CAU = AQ_CLEAR;            // Set PWM2A on Zero
     EPwm8Regs.AQCTLA.bit.CAD = AQ_SET;
 
-    EPwm9Regs.AQCTLA.bit.CAU = AQ_CLEAR;            // Set PWM2A on Zero
-    EPwm9Regs.AQCTLA.bit.CAD = AQ_SET;
-
-//    EPwm2Regs.AQCTLB.bit.CAU = AQ_CLEAR;          // Set PWM2A on Zero
-//    EPwm2Regs.AQCTLB.bit.CAD = AQ_SET;
+    EPwm6Regs.AQCTLA.bit.CAU = AQ_CLEAR;            // Set PWM2A on Zero
+    EPwm6Regs.AQCTLA.bit.CAD = AQ_SET;
 
     //
     // Active Low complementary PWMs - setup the deadband
@@ -233,11 +230,11 @@ void InitEPwm2Example()
     EPwm8Regs.DBRED.bit.DBRED = RED;
     EPwm8Regs.DBFED.bit.DBFED = FED;
 
-    EPwm9Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;
-    EPwm9Regs.DBCTL.bit.POLSEL = DB_ACTV_LOC;
-    EPwm9Regs.DBCTL.bit.IN_MODE = DBA_ALL;
-    EPwm9Regs.DBRED.bit.DBRED = RED;
-    EPwm9Regs.DBFED.bit.DBFED = FED;
+    EPwm6Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;
+    EPwm6Regs.DBCTL.bit.POLSEL = DB_ACTV_LOC;
+    EPwm6Regs.DBCTL.bit.IN_MODE = DBA_ALL;
+    EPwm6Regs.DBRED.bit.DBRED = RED;
+    EPwm6Regs.DBFED.bit.DBFED = FED;
 
     //
     // Interrupt where we will modify the deadband
@@ -272,24 +269,28 @@ __interrupt void cpu_timer0_isr(void)
 
     GpioDataRegs.GPASET.bit.GPIO2 = 1;   // Load output latch
 
+    if(GrisMeas > 0)
+    {
+        EPwm6Regs.CMPA.bit.CMPA = 0;
+    }
+    else
+    {
+        EPwm6Regs.CMPA.bit.CMPA = 2000;
+    }
+    if(GrisMeas < 0) GrisMeas += 1;
+    EPwm7Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-1.0);    // Set compare A value
+    EPwm8Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-0.0);     // Set compare A value
+
     index = index + 2.048;
     if(index >= 2048) index = 0;
-    GrisMeas = sin_tab[(int)index];
+    GrisMeas = m*sin_tab[(int)index];
     spll1.u[0] = GrisMeas;
     SPLL_1ph_SOGI_F_FUNC(&spll1);
 
     DacaRegs.DACVALS.all = spll1.theta[0] * 651;
     DacbRegs.DACVALS.all = GrisMeas * 1000 + 1500;
-//    EPwm7Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-1.0);    // Set compare A value
-//    EPwm8Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-0.0);     // Set compare A value
-//    if(GrisMeas > 0)
-//    {
-//        EPwm9Regs.CMPA.bit.CMPA = 0;
-//    }
-//    else
-//    {
-//        EPwm9Regs.CMPA.bit.CMPA = 2000;
-//    }
+
+
 
 //    float hnb = index/17.0;
 
@@ -301,7 +302,7 @@ __interrupt void cpu_timer0_isr(void)
 }
 
 
-void ConfigureDAC(void)
+void configureDAC(void)
 {
     EALLOW;
     DacbRegs.DACCTL.bit.DACREFSEL = 1;          // Use ADC references
