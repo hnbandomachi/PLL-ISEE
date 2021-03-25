@@ -1,34 +1,82 @@
 // voltage-sensor  --> ADCA1
 // xuat theta      --> ADAA0
 
+#define RED                100U
+#define FED                100U
+#define DB_UP          1
+
 #include "F28x_Project.h"
 #include "Solar_F.h"
 
 extern float sin_tab[];
 
 #define GRID_FREQ 50
-#define ISR_FREQUENCY 20000
+#define ISR_FREQUENCY 50000
 #define PI 3.14159265359
 #define Interrupt_FREQ 1000
 SPLL_1ph_SOGI_F spll1;
 
+//
+// Globals
+//
+Uint32 EPwm7TimerIntCount;
+Uint32 EPwm8TimerIntCount;
+Uint32 EPwm9TimerIntCount;
+Uint16 EPwm7_DB_Direction;
+Uint16 EPwm8_DB_Direction;
+Uint16 EPwm9_DB_Direction;
+
 float GrisMeas = 0;
 float index = 0;
 
+int role = 1;
+
+
+//
+// Function Prototypes
+//
 void Gpio_setup1(void);
+void InitEPwm2Example(void);
+void configureDAC(void);
 
 __interrupt void cpu_timer0_isr(void);
+__interrupt void epwm2_isr(void);
 
 void main(void)
 {
     InitSysCtrl();
-    ConfigureDAC();
+
+    //
+    // Step 2. Initialize GPIO:
+    // This example function is found in the F2837xS_Gpio.c file and
+    // illustrates how to set the GPIO to it's default state.
+    //
     InitGpio();
     GPIO_SetupPinMux(65, GPIO_MUX_CPU1, 0);
     GPIO_SetupPinOptions(65, GPIO_OUTPUT, GPIO_PUSHPULL);
 
+    //
+    // enable PWM7, PWM8 and PWM9
+    //
+    CpuSysRegs.PCLKCR2.bit.EPWM7=1;
+    CpuSysRegs.PCLKCR2.bit.EPWM8=1;
+    CpuSysRegs.PCLKCR2.bit.EPWM9=1;
+
+    //
+    // For this case just init GPIO pins for ePWM7, ePWM8, ePWM9
+    // These functions are in the F2837xS_EPwm.c file
+    //
+    InitEPwm7Gpio();
+    InitEPwm8Gpio();
+    InitEPwm9Gpio();
+
+    ConfigureDAC();
     DINT;
+
     InitPieCtrl();
+    //
+    // Disable CPU interrupts and clear all CPU interrupt flags:
+    //
     IER = 0x0000;
     IFR = 0x0000;
 
@@ -38,19 +86,41 @@ void main(void)
 
     EALLOW;  // This is needed to write to EALLOW protected registers
 
+    PieVectTable.EPWM7_INT = &epwm2_isr;
     PieVectTable.TIMER0_INT = &cpu_timer0_isr;
     EDIS;
 
     InitCpuTimers();
-    ConfigCpuTimer(&CpuTimer0, 200, 50);
+    ConfigCpuTimer(&CpuTimer0, 200, 20);
+    InitEPwm2Example();
+
+    EALLOW;
+    CpuSysRegs.PCLKCR0.bit.TBCLKSYNC =1;
+    EDIS;
+
+    EPwm7TimerIntCount = 0;
+    EPwm8TimerIntCount = 0;
+    EPwm9TimerIntCount = 0;
+
 
     CpuTimer0Regs.TCR.all = 0x4000;
 
     IER |= M_INT1;
     IER |= M_INT13;
     IER |= M_INT14;
+//    IER |= M_INT3;
 
+    //
+    // Enable TINT0 in the PIE: Group 1 interrupt 7
+    //
     PieCtrlRegs.PIEIER1.bit.INTx7 = 1;
+
+    //
+    // Enable EPWM INTn in the PIE: Group 3 interrupt 1-3
+    //
+//    PieCtrlRegs.PIEIER3.bit.INTx7 = 1;
+//    PieCtrlRegs.PIEIER3.bit.INTx8 = 1;
+//    PieCtrlRegs.PIEIER3.bit.INTx9 = 1;
 
     EINT;  // Enable Global interrupt INTM
     ERTM;  // Enable Global realtime interrupt DBGM
@@ -79,19 +149,130 @@ void Gpio_setup1(void)
    //
    // Enable an GPIO output on GPIO2, set it low
    //
-   GpioCtrlRegs.GPAPUD.bit.GPIO2 = 0;   // Enable pullup on GPIO71
+   GpioCtrlRegs.GPAPUD.bit.GPIO2 = 0;   // Enable pullup on GPIO2
    GpioDataRegs.GPASET.bit.GPIO2 = 1;   // Load output latch
-   GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 0;  // GPIO71 = GPIO71
-   GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;   // GPIO71 = output
+   GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 0;  // GPIO2 = GPIO2
+   GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;   // GPIO2 = output
+
+    GpioCtrlRegs.GPAPUD.bit.GPIO20 = 0;   // Enable pullup on GPIO20
+    GpioDataRegs.GPASET.bit.GPIO20 = 1;   // Load output latch
+    GpioCtrlRegs.GPAMUX2.bit.GPIO20 = 0;  // GPIO20 = GPIO20
+    GpioCtrlRegs.GPADIR.bit.GPIO20 = 1;   // GPIO20 = output
    EDIS;
+}
+
+void InitEPwm2Example()
+{
+    EPwm7Regs.TBPRD = 2000;                       // Set timer period
+    EPwm7Regs.TBPHS.bit.TBPHS = 0x0000;           // Phase is 0
+    EPwm7Regs.TBCTR = 0x0000;                     // Clear counter
+
+    EPwm8Regs.TBPRD = 2000;                       // Set timer period
+    EPwm8Regs.TBPHS.bit.TBPHS = 0x0000;           // Phase is 0
+    EPwm8Regs.TBCTR = 0x0000;                     // Clear counter
+
+    EPwm9Regs.TBPRD = 2000;                       // Set timer period
+    EPwm9Regs.TBPHS.bit.TBPHS = 0x0000;           // Phase is 0
+    EPwm9Regs.TBCTR = 0x0000;                     // Clear counter
+
+    //
+    // Setup TBCLK
+    //
+    EPwm7Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // Count up
+    EPwm7Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Disable phase loading
+    EPwm7Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // Clock ratio to SYSCLKOUT
+    EPwm7Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
+                                                   // the scope
+
+    EPwm8Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // Count up
+    EPwm8Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Disable phase loading
+    EPwm8Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // Clock ratio to SYSCLKOUT
+    EPwm8Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
+                                                   // the scope
+
+    EPwm9Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // Count up
+    EPwm9Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Disable phase loading
+    EPwm9Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // Clock ratio to SYSCLKOUT
+    EPwm9Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
+                                                   // the scope
+
+    //
+    // Setup compare
+    //
+    EPwm7Regs.CMPA.bit.CMPA = 1000;
+    EPwm8Regs.CMPA.bit.CMPA = 1000;
+    EPwm9Regs.CMPA.bit.CMPA = 1000;
+
+    //
+    // Set actions
+    //
+    EPwm7Regs.AQCTLA.bit.CAU = AQ_CLEAR;            // Set PWM2A on Zero
+    EPwm7Regs.AQCTLA.bit.CAD = AQ_SET;
+
+    EPwm8Regs.AQCTLA.bit.CAU = AQ_CLEAR;            // Set PWM2A on Zero
+    EPwm8Regs.AQCTLA.bit.CAD = AQ_SET;
+
+    EPwm9Regs.AQCTLA.bit.CAU = AQ_CLEAR;            // Set PWM2A on Zero
+    EPwm9Regs.AQCTLA.bit.CAD = AQ_SET;
+
+//    EPwm2Regs.AQCTLB.bit.CAU = AQ_CLEAR;          // Set PWM2A on Zero
+//    EPwm2Regs.AQCTLB.bit.CAD = AQ_SET;
+
+    //
+    // Active Low complementary PWMs - setup the deadband
+    //
+    EPwm7Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;
+    EPwm7Regs.DBCTL.bit.POLSEL = DB_ACTV_LOC;
+    EPwm7Regs.DBCTL.bit.IN_MODE = DBA_ALL;
+    EPwm7Regs.DBRED.bit.DBRED = RED;
+    EPwm7Regs.DBFED.bit.DBFED = FED;
+
+    EPwm8Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;
+    EPwm8Regs.DBCTL.bit.POLSEL = DB_ACTV_LOC;
+    EPwm8Regs.DBCTL.bit.IN_MODE = DBA_ALL;
+    EPwm8Regs.DBRED.bit.DBRED = RED;
+    EPwm8Regs.DBFED.bit.DBFED = FED;
+
+    EPwm9Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;
+    EPwm9Regs.DBCTL.bit.POLSEL = DB_ACTV_LOC;
+    EPwm9Regs.DBCTL.bit.IN_MODE = DBA_ALL;
+    EPwm9Regs.DBRED.bit.DBRED = RED;
+    EPwm9Regs.DBFED.bit.DBFED = FED;
+
+    //
+    // Interrupt where we will modify the deadband
+    //
+    EPwm7Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;     // Select INT on Zero event
+    EPwm7Regs.ETSEL.bit.INTEN = 1;                // Enable INT
+    EPwm7Regs.ETPS.bit.INTPRD = ET_1ST;           // Generate INT on 1st event
+}
+
+__interrupt void epwm2_isr(void)
+{
+
+
+    EPwm7TimerIntCount++;
+
+    //
+    // Clear INT flag for this timer
+    //
+    EPwm7Regs.ETCLR.bit.INT = 1;
+
+    //
+    // Acknowledge this interrupt to receive more interrupts from group 3
+    //
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP3;
 }
 
 __interrupt void cpu_timer0_isr(void)
 {
 
+    if(role) GpioDataRegs.GPASET.bit.GPIO20 = 1;   // Load output latch
+    else GpioDataRegs.GPACLEAR.bit.GPIO20=1;   // Load output latch
+
     GpioDataRegs.GPASET.bit.GPIO2 = 1;   // Load output latch
 
-    index = index + 5.12;
+    index = index + 2.048;
     if(index >= 2048) index = 0;
     GrisMeas = sin_tab[(int)index];
     spll1.u[0] = GrisMeas;
@@ -99,6 +280,17 @@ __interrupt void cpu_timer0_isr(void)
 
     DacaRegs.DACVALS.all = spll1.theta[0] * 651;
     DacbRegs.DACVALS.all = GrisMeas * 1000 + 1500;
+//    EPwm7Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-1.0);    // Set compare A value
+//    EPwm8Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-0.0);     // Set compare A value
+//    if(GrisMeas > 0)
+//    {
+//        EPwm9Regs.CMPA.bit.CMPA = 0;
+//    }
+//    else
+//    {
+//        EPwm9Regs.CMPA.bit.CMPA = 2000;
+//    }
+
 //    float hnb = index/17.0;
 
     GpioDataRegs.GPACLEAR.bit.GPIO2=1;   // Load output latch
