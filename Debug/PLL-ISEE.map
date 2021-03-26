@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v20.2.1                     
 ******************************************************************************
->> Linked Fri Mar 26 09:42:26 2021
+>> Linked Fri Mar 26 11:10:28 2021
 
 OUTPUT FILE NAME:   <PLL-ISEE.out>
 ENTRY POINT SYMBOL: "_c_int00"  address: 0000d2ac
@@ -13,7 +13,7 @@ MEMORY CONFIGURATION
 ----------------------  --------  ---------  --------  --------  ----  --------
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
-  RAMM0                 00000122   000002de  00000035  000002a9  RWIX
+  RAMM0                 00000122   000002de  00000031  000002ad  RWIX
   RAMD0                 0000b000   00000800  00000000  00000800  RWIX
   RAMGS0                0000c000   00001000  00000ffc  00000004  RWIX
   RAMGS1                0000d000   00001000  000003cc  00000c34  RWIX
@@ -153,12 +153,12 @@ codestart
 *          0    00000000    00000002     
                   00000000    00000002     F2837xS_CodeStartBranch.obj (codestart)
 
-.cinit     0    00000122    00000031     
-                  00000122    00000017     main.obj (.cinit)
-                  00000139    0000000e     rts2800_fpu32.lib : exit.c.obj (.cinit)
-                  00000147    00000005                       : _lock.c.obj (.cinit:__lock)
-                  0000014c    00000005                       : _lock.c.obj (.cinit:__unlock)
-                  00000151    00000002     --HOLE-- [fill = 0]
+.cinit     0    00000122    0000002d     
+                  00000122    00000013     main.obj (.cinit)
+                  00000135    0000000e     rts2800_fpu32.lib : exit.c.obj (.cinit)
+                  00000143    00000005                       : _lock.c.obj (.cinit:__lock)
+                  00000148    00000005                       : _lock.c.obj (.cinit:__unlock)
+                  0000014d    00000002     --HOLE-- [fill = 0]
 
 .pinit     0    00000122    00000000     UNINITIALIZED
 
@@ -173,8 +173,8 @@ codestart
                   0000a800    000001c0     F2837xS_PieVect.obj (.econst:_PieVectTableInit)
 
 .TI.ramfunc 
-*          0    00000153    00000004     
-                  00000153    00000004     F2837xS_usDelay.obj (.TI.ramfunc)
+*          0    0000014f    00000004     
+                  0000014f    00000004     F2837xS_usDelay.obj (.TI.ramfunc)
 
 GETBUFFER 
 *          0    0003f800    00000000     DSECT
@@ -632,7 +632,7 @@ MODULE SUMMARY
        sin_tab.obj                      0      4096               0                 
        F2837xS_DefaultISR.obj           1413   0                  0                 
        F2837xS_SysCtrl.obj              825    0                  0                 
-       main.obj                         596    23                 134               
+       main.obj                         596    19                 134               
        SPLL_1ph_SOGI_F.obj              649    0                  0                 
        F2837xS_Gpio.obj                 580    0                  0                 
        F2837xS_PieVect.obj              38     448                0                 
@@ -642,7 +642,7 @@ MODULE SUMMARY
        F2837xS_usDelay.obj              4      0                  0                 
        F2837xS_CodeStartBranch.obj      2      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           4524   4567               9307              
+       Total:                           4524   4563               9307              
                                                                                     
     D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib/rts2800_fpu32.lib
        fs_div28.asm.obj                 136    0                  0                 
@@ -661,7 +661,7 @@ MODULE SUMMARY
                                                                                     
        Stack:                           0      0                  512               
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     5070   4591               9829              
+       Grand Total:                     5070   4587               9829              
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -801,13 +801,12 @@ address     data page           name
 00008001     200 (00008000)     _EPwm8_DB_Direction
 00008002     200 (00008000)     _EPwm6_DB_Direction
 00008003     200 (00008000)     _role
-00008004     200 (00008000)     _hnb
-00008006     200 (00008000)     _EPwm7TimerIntCount
-00008008     200 (00008000)     _EPwm8TimerIntCount
-0000800a     200 (00008000)     _EPwm6TimerIntCount
-0000800c     200 (00008000)     _GrisMeas
-0000800e     200 (00008000)     _index
-00008010     200 (00008000)     _m
+00008004     200 (00008000)     _EPwm7TimerIntCount
+00008006     200 (00008000)     _EPwm8TimerIntCount
+00008008     200 (00008000)     _EPwm6TimerIntCount
+0000800a     200 (00008000)     _GrisMeas
+0000800c     200 (00008000)     _index
+0000800e     200 (00008000)     _m
 
 00008040     201 (00008040)     _spll1
 
@@ -1018,13 +1017,13 @@ abs   ffffffff  .text
 1     00004300  _EPwm4Regs                            
 1     00004400  _EPwm5Regs                            
 1     00004500  _EPwm6Regs                            
-1     0000800a  _EPwm6TimerIntCount                   
+1     00008008  _EPwm6TimerIntCount                   
 1     00008002  _EPwm6_DB_Direction                   
 1     00004600  _EPwm7Regs                            
-1     00008006  _EPwm7TimerIntCount                   
+1     00008004  _EPwm7TimerIntCount                   
 1     00008000  _EPwm7_DB_Direction                   
 1     00004700  _EPwm8Regs                            
-1     00008008  _EPwm8TimerIntCount                   
+1     00008006  _EPwm8TimerIntCount                   
 1     00008001  _EPwm8_DB_Direction                   
 1     00004800  _EPwm9Regs                            
 1     00007a00  _EPwmXbarRegs                         
@@ -1041,7 +1040,7 @@ abs   ffffffff  .text
 1     00000d01  _EmuBMode                             
 1     00000d00  _EmuKey                               
 0     0000d34a  _EnableInterrupts                     
-0     00000153  _F28x_usDelay                         
+0     0000014f  _F28x_usDelay                         
 0     0000c528  _FLASH_CORRECTABLE_ERROR_ISR          
 0     0000c3fc  _FPU_OVERFLOW_ISR                     
 0     0000c406  _FPU_UNDERFLOW_ISR                    
@@ -1066,7 +1065,7 @@ abs   ffffffff  .text
 1     00007c00  _GpioCtrlRegs                         
 1     00007f00  _GpioDataRegs                         
 0     0000ce0a  _Gpio_setup1                          
-1     0000800c  _GrisMeas                             
+1     0000800a  _GrisMeas                             
 0     0000c899  _HALT                                 
 0     0000c8aa  _HIB                                  
 0     0000c29e  _I2CA_FIFO_ISR                        
@@ -1223,9 +1222,8 @@ abs   ffffffff  ___text__
 0     0000d0d6  _cpu_timer0_isr                       
 0     0000d000  _epwm2_isr                            
 0     0000d304  _exit                                 
-1     00008004  _hnb                                  
-1     0000800e  _index                                
-1     00008010  _m                                    
+1     0000800c  _index                                
+1     0000800e  _m                                    
 0     0000cd8b  _main                                 
 0     0000d39d  _memcpy                               
 1     00008003  _role                                 
@@ -1247,7 +1245,7 @@ page  address   name
 0     00000000  code_start                            
 0     00000122  ___cinit__                            
 0     00000122  cinit                                 
-0     00000153  _F28x_usDelay                         
+0     0000014f  _F28x_usDelay                         
 0     00000ce0  _Cla1SoftIntRegs                      
 0     0000c000  _TIMER1_ISR                           
 0     0000c00a  _TIMER2_ISR                           
@@ -1549,13 +1547,12 @@ page  address   name
 1     00008001  _EPwm8_DB_Direction                   
 1     00008002  _EPwm6_DB_Direction                   
 1     00008003  _role                                 
-1     00008004  _hnb                                  
-1     00008006  _EPwm7TimerIntCount                   
-1     00008008  _EPwm8TimerIntCount                   
-1     0000800a  _EPwm6TimerIntCount                   
-1     0000800c  _GrisMeas                             
-1     0000800e  _index                                
-1     00008010  _m                                    
+1     00008004  _EPwm7TimerIntCount                   
+1     00008006  _EPwm8TimerIntCount                   
+1     00008008  _EPwm6TimerIntCount                   
+1     0000800a  _GrisMeas                             
+1     0000800c  _index                                
+1     0000800e  _m                                    
 1     00008040  _spll1                                
 1     00008086  _CpuTimer0                            
 1     0000808e  _CpuTimer1                            
@@ -1606,4 +1603,4 @@ abs   ffffffff  binit
 abs   ffffffff  etext                                 
 abs   ffffffff  pinit                                 
 
-[361 symbols]
+[360 symbols]
