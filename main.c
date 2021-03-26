@@ -1,8 +1,8 @@
 // voltage-sensor  --> ADCA1
 // xuat theta      --> ADAA0
 
-#define RED                50U
-#define FED                50U
+#define RED                20U
+#define FED                20U
 #define DB_UP          1
 
 #include "F28x_Project.h"
@@ -185,19 +185,22 @@ void InitEPwm2Example()
     // Setup TBCLK
     //
     EPwm7Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // Count up
-    EPwm7Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Disable phase loading
+    EPwm7Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Master module
+//    EPwm7Regs.TBCTL.bit.SYNCOSEL = TB_CTR_ZERO;     // Sync down-stream module
     EPwm7Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // Clock ratio to SYSCLKOUT
     EPwm7Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
                                                    // the scope
 
     EPwm8Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // Count up
-    EPwm8Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Disable phase loading
+    EPwm8Regs.TBCTL.bit.PHSEN = TB_DISABLE;         // slave module
+//    EPwm8Regs.TBCTL.bit.SYNCOSEL = TB_CTR_ZERO;     // Sync down-stream module
     EPwm8Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // Clock ratio to SYSCLKOUT
     EPwm8Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
                                                    // the scope
 
     EPwm6Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // Count up
-    EPwm6Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // Disable phase loading
+    EPwm6Regs.TBCTL.bit.PHSEN = TB_DISABLE;        // slave module
+//    EPwm6Regs.TBCTL.bit.SYNCOSEL = TB_CTR_ZERO;     // Sync down-stream module
     EPwm6Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // Clock ratio to SYSCLKOUT
     EPwm6Regs.TBCTL.bit.CLKDIV = TB_DIV1;          // Slow just to observe on
                                                    // the scope
@@ -259,11 +262,11 @@ __interrupt void epwm2_isr(void)
     GpioDataRegs.GPASET.bit.GPIO2 = 1;   // Load output latch
 
     index = index + 4.096;
-    if(index >= 2048) index = 0;
+    if(index >= 2048) index -= 2048;
     GrisMeas = m*sin_tab[(int)index];
     spll1.u[0] = GrisMeas;
 
-    if(GrisMeas >= 0)
+    if(GrisMeas > 0)
     {
         EPwm6Regs.CMPA.bit.CMPA = 0;
     }
@@ -271,9 +274,9 @@ __interrupt void epwm2_isr(void)
     {
         EPwm6Regs.CMPA.bit.CMPA = 2000;
     }
-    if(GrisMeas < 0) GrisMeas += 1;
-    EPwm7Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-1.0);    // Set compare A value
-    EPwm8Regs.CMPA.bit.CMPA = 2000*(2.0*GrisMeas-0.0);     // Set compare A value
+    if(GrisMeas <= 0.0000) GrisMeas += 1.00000;
+    EPwm7Regs.CMPA.bit.CMPA = (int)2000*(2.0*GrisMeas-1.00000);    // Set compare A value
+    EPwm8Regs.CMPA.bit.CMPA = (int)2000*(2.0*GrisMeas);     // Set compare A value
 
     SPLL_1ph_SOGI_F_FUNC(&spll1);
 
