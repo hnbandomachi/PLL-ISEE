@@ -19,6 +19,9 @@
 #define ISR_FREQUENCY 25000
 #define PI 3.14159265359
 
+#define I0      15
+#define phi     0
+
 extern float sin_tab[];
 
 //
@@ -43,7 +46,7 @@ float32 Ig;
 float32 Vpv;
 float32 Ipv;
 
-float GrisMeas = 0;
+float outt = 0;
 float index = 0, m = 0.8;
 int role = 1;
 
@@ -55,6 +58,9 @@ void InitEPwm2Example(void);
 void ConfigureADC(void);
 void configureDAC(void);
 void SetupADCEpwm(void);
+
+void CurrrentControlNoPV(void);
+void SingleStagePV(void);
 
 __interrupt void cpu_timer0_isr(void);
 __interrupt void epwm2_isr(void);
@@ -92,7 +98,6 @@ void main(void)
     InitEPwm8Gpio();
     InitEPwm6Gpio();
 
-    configureDAC();
     DINT;
 
     //
@@ -240,7 +245,7 @@ void main(void)
 
         //
         //at this point, conversion results are stored in
-        //AdcaResult0, AdcaResult1, AdcbResult0, and AdcbResult1
+        //VgSample, IgSample, VpvSample, and IpvSample
         //
 
         //
@@ -437,6 +442,14 @@ void InitEPwm2Example()
 __interrupt void epwm2_isr(void)
 {
 
+    Vg = (float32)(VgSample / 1234.0);
+    Ig = (float32)(IgSample / 1234.0);
+    Vpv = (float32)(VpvSample / 1234.0);
+    Ipv = (float32)(IpvSample / 1234.0);
+    
+    CurrrentControlNoPV();
+    // SingleStagePV();
+
     if (role)
         GpioDataRegs.GPASET.bit.GPIO20 = 1; // Load output latch
     else
@@ -447,10 +460,10 @@ __interrupt void epwm2_isr(void)
     index = index + 4.096;
     if (index >= 2048)
         index -= 2048;
-    GrisMeas = m * sin_tab[(int)index];
-    spll1.u[0] = GrisMeas;
+    outt = m * sin_tab[(int)index];
+    spll1.u[0] = outt;
 
-    if (GrisMeas > 0)
+    if (outt > 0)
     {
         EPwm6Regs.CMPA.bit.CMPA = 0;
     }
@@ -458,15 +471,15 @@ __interrupt void epwm2_isr(void)
     {
         EPwm6Regs.CMPA.bit.CMPA = 2000;
     }
-    if (GrisMeas <= 0.0000)
-        GrisMeas += 1.00000;
-    EPwm7Regs.CMPA.bit.CMPA = (int)2000 * (2.0 * GrisMeas - 1.00000); // Set compare A value
-    EPwm8Regs.CMPA.bit.CMPA = (int)2000 * (2.0 * GrisMeas);           // Set compare A value
+    if (outt <= 0.0000)
+        outt += 1.00000;
+    EPwm7Regs.CMPA.bit.CMPA = (int)2000 * (2.0 * outt - 1.00000); // Set compare A value
+    EPwm8Regs.CMPA.bit.CMPA = (int)2000 * (2.0 * outt);           // Set compare A value
 
     SPLL_1ph_SOGI_F_FUNC(&spll1);
 
-    DacaRegs.DACVALS.all = spll1.theta[0] * 651;
-    DacbRegs.DACVALS.all = GrisMeas * 1000 + 1500;
+    // DacaRegs.DACVALS.all = spll1.theta[0] * 651;
+    // DacbRegs.DACVALS.all = outt * 1000 + 1500;
 
     GpioDataRegs.GPACLEAR.bit.GPIO2 = 1; // Load output latch
 
@@ -490,22 +503,12 @@ __interrupt void cpu_timer0_isr(void)
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }
 
-void configureDAC(void)
+void CurrrentControlNoPV()
 {
-    EALLOW;
-    DacbRegs.DACCTL.bit.DACREFSEL = 1;  // Use ADC references
-    DacbRegs.DACCTL.bit.LOADMODE = 0;   // Load on next SYSCLK
-                                        // Set mid-range
-    DacbRegs.DACOUTEN.bit.DACOUTEN = 1; // Enable DAC
 
-    DacaRegs.DACCTL.bit.DACREFSEL = 1;  // Use ADC references
-    DacaRegs.DACCTL.bit.LOADMODE = 0;   // Load on next SYSCLK
-                                        // Set mid-range
-    DacaRegs.DACOUTEN.bit.DACOUTEN = 1; // Enable DAC
+}
 
-    DaccRegs.DACCTL.bit.DACREFSEL = 1;  // Use ADC references
-    DaccRegs.DACCTL.bit.LOADMODE = 0;   // Load on next SYSCLK
-                                        // Set mid-range
-    DaccRegs.DACOUTEN.bit.DACOUTEN = 1; // Enable DAC
-    EDIS;
+void SingleStagePV()
+{
+
 }
