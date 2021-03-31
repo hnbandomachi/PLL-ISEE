@@ -13,14 +13,16 @@
 //
 // Defines
 //
-#define RED 20U
-#define FED 20U
-#define GRID_FREQ 50
-#define ISR_FREQUENCY 25000
-#define PI 3.14159265359
+#define RED             10U
+#define FED             10U
+#define GRID_FREQ       50
+#define ISR_FREQUENCY   25000
+#define PI              3.14159265359
 
-#define I0      15
-#define phi     0
+#define I0              15
+#define phi             0
+
+#define PWM_PRD         2000    // 25 kHz
 
 extern float sin_tab[];
 
@@ -46,8 +48,8 @@ float32 Ig;
 float32 Vpv;
 float32 Ipv;
 
-float outt = 0;
-float index = 0, m = 0.8;
+float32 outt = 0;
+float32 index = 0, m = 0.8;
 int role = 1;
 
 //
@@ -355,15 +357,15 @@ void Gpio_setup1(void)
 
 void InitEPwm2Example()
 {
-    EPwm7Regs.TBPRD = 2000;             // Set timer period
+    EPwm7Regs.TBPRD = PWM_PRD;             // Set timer period
     EPwm7Regs.TBPHS.bit.TBPHS = 0x0000; // Phase is 0
     EPwm7Regs.TBCTR = 0x0000;           // Clear counter
 
-    EPwm8Regs.TBPRD = 2000;             // Set timer period
+    EPwm8Regs.TBPRD = PWM_PRD;             // Set timer period
     EPwm8Regs.TBPHS.bit.TBPHS = 0x0000; // Phase is 0
     EPwm8Regs.TBCTR = 0x0000;           // Clear counter
 
-    EPwm6Regs.TBPRD = 2000;             // Set timer period
+    EPwm6Regs.TBPRD = PWM_PRD;             // Set timer period
     EPwm6Regs.TBPHS.bit.TBPHS = 0x0000; // Phase is 0
     EPwm6Regs.TBCTR = 0x0000;           // Clear counter
 
@@ -394,9 +396,9 @@ void InitEPwm2Example()
     //
     // Setup compare
     //
-    EPwm7Regs.CMPA.bit.CMPA = 1000;
-    EPwm8Regs.CMPA.bit.CMPA = 1000;
-    EPwm6Regs.CMPA.bit.CMPA = 1000;
+    EPwm7Regs.CMPA.bit.CMPA = PWM_PRD/2;
+    EPwm8Regs.CMPA.bit.CMPA = PWM_PRD/2;
+    EPwm6Regs.CMPA.bit.CMPA = PWM_PRD/2;
 
     //
     // Set actions
@@ -441,11 +443,12 @@ void InitEPwm2Example()
 
 __interrupt void epwm2_isr(void)
 {
+    // Calculate the real value
 
-    Vg = (float32)(VgSample / 1234.0);
-    Ig = (float32)(IgSample / 1234.0);
-    Vpv = (float32)(VpvSample / 1234.0);
-    Ipv = (float32)(IpvSample / 1234.0);
+    Vg = (float32)(VgSample - 2512.0)*0.2344322344;
+    Ig = (float32)(IgSample - 2512.0)*0.01932098706;
+    Vpv = (float32)(VpvSample / 4096.0);
+    Ipv = (float32)(IpvSample / 4096.0);
     
     CurrrentControlNoPV();
     // SingleStagePV();
@@ -463,18 +466,18 @@ __interrupt void epwm2_isr(void)
     outt = m * sin_tab[(int)index];
     spll1.u[0] = outt;
 
-    if (outt > 0)
+    if (outt > 0.0000)
     {
         EPwm6Regs.CMPA.bit.CMPA = 0;
     }
     else
     {
-        EPwm6Regs.CMPA.bit.CMPA = 2000;
+        EPwm6Regs.CMPA.bit.CMPA = PWM_PRD;
     }
     if (outt <= 0.0000)
         outt += 1.00000;
-    EPwm7Regs.CMPA.bit.CMPA = (int)2000 * (2.0 * outt - 1.00000); // Set compare A value
-    EPwm8Regs.CMPA.bit.CMPA = (int)2000 * (2.0 * outt);           // Set compare A value
+    EPwm7Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt - 1.00000); // Set compare A value
+    EPwm8Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt);           // Set compare A value
 
     SPLL_1ph_SOGI_F_FUNC(&spll1);
 
