@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExportImportMemento.1>
+<VarMeta IMemento.internal.id="role"/>
+<VarMeta IMemento.internal.id="outt"/>
+<VarMeta IMemento.internal.id="m"/>
+<VarMeta IMemento.internal.id="VgSample"/>
+<VarMeta IMemento.internal.id="IgSample"/>
+<VarMeta IMemento.internal.id="VpvSample"/>
+<VarMeta IMemento.internal.id="IpvSample"/>
+<VarMeta IMemento.internal.id="Vg"/>
+<VarMeta IMemento.internal.id="Ig"/>
+<VarMeta IMemento.internal.id="Vpv"/>
+<VarMeta IMemento.internal.id="Ipv"/>
+<VarMeta IMemento.internal.id="spll1"/>
+<VarMeta IMemento.internal.id="Vg_watch"/>
+</ExportImportMemento.1>

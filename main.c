@@ -13,22 +13,30 @@
 //
 // Defines
 //
-#define RED             10U
-#define FED             10U
-#define GRID_FREQ       50
-#define ISR_FREQUENCY   25000
-#define PI              3.14159265359
+#define RED 10U
+#define FED 10U
+#define GRID_FREQ 50
+#define ISR_FREQUENCY 25000
+#define PI 3.14159265359
 
-#define I0              15
-#define phi             0
+#define PWM_PRD 2000 // 25 kHz
+#define sample_watch 1000
 
-#define PWM_PRD         2000    // 25 kHz
+#define REFERENCE_VDAC 1
+#define REFERENCE_VREF 1
+#define DACA 1
+#define DACB 2
+#define DACC 3
+#define REFERENCE REFERENCE_VDAC
+#define DAC_NUM DACB
 
 extern float sin_tab[];
 
 //
 // Globals
 //
+volatile struct DAC_REGS *DAC_PTR[4] = {0x0, &DacaRegs, &DacbRegs, &DaccRegs};
+
 Uint32 EPwm7TimerIntCount;
 Uint32 EPwm8TimerIntCount;
 Uint32 EPwm6TimerIntCount;
@@ -38,19 +46,24 @@ Uint16 EPwm6_DB_Direction;
 
 SPLL_1ph_SOGI_F spll1;
 
-Uint16 VgSample;
+Uint16 VgSample, cnt_watch = 0, cnt_role = 0;
 Uint16 IgSample;
 Uint16 VpvSample;
 Uint16 IpvSample;
 
-float32 Vg;
-float32 Ig;
+float32 Vg, Vg_watch[sample_watch], Iref_watch[sample_watch];
+float32 Ig, Ig_watch[sample_watch];
 float32 Vpv;
 float32 Ipv;
 
-float32 outt = 0;
+float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
+float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
+float32 outt = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0;
 float32 index = 0, m = 0.8;
-int role = 1;
+
+int role = 0, allow_role = 0;
+// Flags for detecting ZCD
+float invSine, invSinePrev;
 
 //
 // Function Prototypes
@@ -58,11 +71,13 @@ int role = 1;
 void Gpio_setup1(void);
 void InitEPwm2Example(void);
 void ConfigureADC(void);
-void configureDAC(void);
+void configureDAC(Uint16 dac_num);
 void SetupADCEpwm(void);
 
 void CurrrentControlNoPV(void);
 void SingleStagePV(void);
+void reset_after_on_role(void);
+int check_role();
 
 __interrupt void cpu_timer0_isr(void);
 __interrupt void epwm2_isr(void);
@@ -142,6 +157,7 @@ void main(void)
     // Configure the ADC and power it up
     //
     ConfigureADC();
+    // configureDAC(DAC_NUM);
 
     //
     // Setup the ADC for ePWM triggered conversions on sensor
@@ -329,6 +345,16 @@ void SetupADCEpwm(void)
     EDIS;
 }
 
+void configureDAC(Uint16 dac_num)
+{
+    EALLOW;
+    DAC_PTR[dac_num]->DACCTL.bit.DACREFSEL = REFERENCE;
+    DAC_PTR[dac_num]->DACOUTEN.bit.DACOUTEN = 1;
+    DAC_PTR[dac_num]->DACVALS.all = 0;
+    DELAY_US(10); // Delay for buffered DAC to power up
+    EDIS;
+}
+
 void Gpio_setup1(void)
 {
     //
@@ -357,15 +383,15 @@ void Gpio_setup1(void)
 
 void InitEPwm2Example()
 {
-    EPwm7Regs.TBPRD = PWM_PRD;             // Set timer period
+    EPwm7Regs.TBPRD = PWM_PRD;          // Set timer period
     EPwm7Regs.TBPHS.bit.TBPHS = 0x0000; // Phase is 0
     EPwm7Regs.TBCTR = 0x0000;           // Clear counter
 
-    EPwm8Regs.TBPRD = PWM_PRD;             // Set timer period
+    EPwm8Regs.TBPRD = PWM_PRD;          // Set timer period
     EPwm8Regs.TBPHS.bit.TBPHS = 0x0000; // Phase is 0
     EPwm8Regs.TBCTR = 0x0000;           // Clear counter
 
-    EPwm6Regs.TBPRD = PWM_PRD;             // Set timer period
+    EPwm6Regs.TBPRD = PWM_PRD;          // Set timer period
     EPwm6Regs.TBPHS.bit.TBPHS = 0x0000; // Phase is 0
     EPwm6Regs.TBCTR = 0x0000;           // Clear counter
 
@@ -396,9 +422,9 @@ void InitEPwm2Example()
     //
     // Setup compare
     //
-    EPwm7Regs.CMPA.bit.CMPA = PWM_PRD/2;
-    EPwm8Regs.CMPA.bit.CMPA = PWM_PRD/2;
-    EPwm6Regs.CMPA.bit.CMPA = PWM_PRD/2;
+    EPwm7Regs.CMPA.bit.CMPA = PWM_PRD / 2;
+    EPwm8Regs.CMPA.bit.CMPA = PWM_PRD / 2;
+    EPwm6Regs.CMPA.bit.CMPA = PWM_PRD / 2;
 
     //
     // Set actions
@@ -443,16 +469,6 @@ void InitEPwm2Example()
 
 __interrupt void epwm2_isr(void)
 {
-    // Calculate the real value
-
-    Vg = (float32)(VgSample - 2512.0)*0.2344322344;
-    Ig = (float32)(IgSample - 2512.0)*0.01932098706;
-    Vpv = (float32)(VpvSample / 4096.0);
-    Ipv = (float32)(IpvSample / 4096.0);
-    
-    CurrrentControlNoPV();
-    // SingleStagePV();
-
     if (role)
         GpioDataRegs.GPASET.bit.GPIO20 = 1; // Load output latch
     else
@@ -460,29 +476,46 @@ __interrupt void epwm2_isr(void)
 
     GpioDataRegs.GPASET.bit.GPIO2 = 1; // Load output latch
 
-    index = index + 4.096;
-    if (index >= 2048)
-        index -= 2048;
-    outt = m * sin_tab[(int)index];
-    spll1.u[0] = outt;
+    if(allow_role == 0) role = 0;
 
-    if (outt > 0.0000)
+    // Calculate the real value
+    Vg = (float32)(VgSample - 2512.0) * 0.2344322344;
+    Ig = (float32)(IgSample - 2512.0) * 0.01932098706;
+    Vpv = (float32)(VpvSample / 4096.0);
+    Ipv = (float32)(IpvSample / 4096.0);
+
+    spll1.u[0] = Vg / 400.0;
+    SPLL_1ph_SOGI_F_FUNC(&spll1);
+    invSine = spll1.sin;
+
+    if (check_role())
     {
-        EPwm6Regs.CMPA.bit.CMPA = 0;
+        role = 1;
+        if (cnt_role < 1)
+        {
+            reset_after_on_role();
+        }
+        cnt_role = 2;
+    }
+
+    CurrrentControlNoPV();
+    invSinePrev = invSine;
+    // SingleStagePV();
+
+    DAC_PTR[DAC_NUM]->DACVALS.all = spll1.theta[0] * 651;
+    // DacbRegs.DACVALS.all = outt * 1000 + 1500;
+
+    // Watch variables
+    if (cnt_watch < sample_watch)
+    {
+        Vg_watch[cnt_watch] = Vg;
+        Ig_watch[cnt_watch] = Ig;
+        Iref_watch[cnt_watch] = spll1.theta[0];
     }
     else
-    {
-        EPwm6Regs.CMPA.bit.CMPA = PWM_PRD;
-    }
-    if (outt <= 0.0000)
-        outt += 1.00000;
-    EPwm7Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt - 1.00000); // Set compare A value
-    EPwm8Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt);           // Set compare A value
+        cnt_watch = sample_watch + 1;
 
-    SPLL_1ph_SOGI_F_FUNC(&spll1);
-
-    // DacaRegs.DACVALS.all = spll1.theta[0] * 651;
-    // DacbRegs.DACVALS.all = outt * 1000 + 1500;
+    cnt_watch++;
 
     GpioDataRegs.GPACLEAR.bit.GPIO2 = 1; // Load output latch
 
@@ -508,10 +541,65 @@ __interrupt void cpu_timer0_isr(void)
 
 void CurrrentControlNoPV()
 {
+    if (Itemp <= I0 && invSinePrev > 0 && invSine < 0)
+    {
+        Itemp += 0.02;
+    }
+    Iref = I0 * sin(spll1.theta[0] + phi * 2.0 * PI / 360.0);
+    e0 = Iref - Ig;
+    // outt0 = 940.0 * (e0 - 1.9965967452 * e1 + 0.9967536521 * e2) + 2.0 * outt1 - 1.00015792 * outt2;
+    outt0 = 100*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
 
+    // Update for the next loop
+    e2 = e1;
+    e1 = e0;
+    outt2 = outt1;
+    outt1 = outt0;
+
+    outt = outt0 / 21000.0;
+    if(outt > 1 || outt < -1) reset_after_on_role();
+
+    if (outt > 0.0000)
+    {
+        EPwm6Regs.CMPA.bit.CMPA = 0;
+    }
+    else
+    {
+        EPwm6Regs.CMPA.bit.CMPA = PWM_PRD;
+    }
+    if (outt <= 0.0000)
+    {
+        outt += 1.00000;
+    }
+    EPwm7Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt - 1.00000); // Set compare A value
+    EPwm8Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt);           // Set compare A value
+}
+
+int check_role()
+{
+    // Tam thoi dong role thu cong
+    if (invSinePrev > 0 && invSine < 0 && allow_role)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void reset_after_on_role()
+{
+    Itemp = 0;
+    outt = 0.0;
+    outt0 = 0.0;
+    outt1 = 0.0;
+    outt2 = 0.0;
+    e0 = 0.0;
+    e1 = 0.0;
+    e2 = 0.0;
 }
 
 void SingleStagePV()
 {
-
 }
