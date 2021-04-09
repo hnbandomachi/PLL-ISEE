@@ -20,7 +20,7 @@
 #define PI 3.14159265359
 
 #define PWM_PRD 2000 // 25 kHz
-#define sample_watch 1000
+#define sample_watch 1
 
 #define REFERENCE_VDAC 1
 #define REFERENCE_VREF 1
@@ -51,15 +51,15 @@ Uint16 IgSample;
 Uint16 VpvSample;
 Uint16 IpvSample;
 
-float32 Vg, Vg_watch[sample_watch], Iref_watch[sample_watch];
-float32 Ig, Ig_watch[sample_watch];
+float64 Vg, Vg_watch[sample_watch], Iref_watch[sample_watch];
+float64 Ig, Ig_watch[sample_watch];
 float32 Vpv;
 float32 Ipv;
 
 float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
 float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
 float32 outt = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0;
-float32 index = 0, m = 0.8;
+float32 index = 0, m = 1000.0, Kp = 50;
 
 int role = 0, allow_role = 0;
 // Flags for detecting ZCD
@@ -548,7 +548,7 @@ void CurrrentControlNoPV()
     Iref = I0 * sin(spll1.theta[0] + phi * 2.0 * PI / 360.0);
     e0 = Iref - Ig;
     // outt0 = 940.0 * (e0 - 1.9965967452 * e1 + 0.9967536521 * e2) + 2.0 * outt1 - 1.00015792 * outt2;
-    outt0 = 100*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
+    outt0 = Kp*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
 
     // Update for the next loop
     e2 = e1;
@@ -556,7 +556,7 @@ void CurrrentControlNoPV()
     outt2 = outt1;
     outt1 = outt0;
 
-    outt = outt0 / 21000.0;
+    outt = outt0 / m;
     if(outt > 1 || outt < -1) reset_after_on_role();
 
     if (outt > 0.0000)
