@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v20.2.1                     
 ******************************************************************************
->> Linked Sat Apr 10 09:47:48 2021
+>> Linked Sat Apr 10 18:06:57 2021
 
 OUTPUT FILE NAME:   <PLL-ISEE.out>
 ENTRY POINT SYMBOL: "_c_int00"  address: 0000d68e
@@ -16,7 +16,7 @@ PAGE 0:
   RAMM0                 00000122   000002de  0000007f  0000025f  RWIX
   RAMD0                 0000b000   00000800  00000000  00000800  RWIX
   RAMGS0                0000c000   00001000  00001000  00000000  RWIX
-  RAMGS1                0000d000   00001000  000007fe  00000802  RWIX
+  RAMGS1                0000d000   00001000  00000807  000007f9  RWIX
   RAMGS2                0000e000   00001000  00000000  00001000  RWIX
   RAMGS3                0000f000   00001000  00000000  00001000  RWIX
   RAMGS4                00010000   00001000  00000000  00001000  RWIX
@@ -595,13 +595,12 @@ CpuSysRegsFile
 .text.1    0    0000c000    00001000     
                   0000c000    00000585     F2837xS_DefaultISR.obj (.text:retain)
                   0000c585    00000339     F2837xS_SysCtrl.obj (.text)
-                  0000c8be    0000031b     main.obj (.text)
-                  0000cbd9    00000289     SPLL_1ph_SOGI_F.obj (.text)
-                  0000ce62    0000010a     main.obj (.text:retain)
-                  0000cf6c    0000008b     rts2800_fpu32.lib : fd_div28.asm.obj (.text)
-                  0000cff7    00000009                       : _lock.c.obj (.text)
+                  0000c8be    00000319     main.obj (.text)
+                  0000cbd7    00000289     SPLL_1ph_SOGI_F.obj (.text)
+                  0000ce60    00000115     main.obj (.text:retain)
+                  0000cf75    0000008b     rts2800_fpu32.lib : fd_div28.asm.obj (.text)
 
-.text.2    0    0000d000    000007fe     
+.text.2    0    0000d000    00000807     
                   0000d000    00000244     F2837xS_Gpio.obj (.text)
                   0000d244    000000fd     F2837xS_EPwm.obj (.text)
                   0000d341    000000f1     F2837xS_Adc.obj (.text)
@@ -620,8 +619,9 @@ CpuSysRegsFile
                   0000d7bf    0000001c                       : fs_tofdfpu32.asm.obj (.text)
                   0000d7db    00000012                       : args_main.c.obj (.text)
                   0000d7ed    0000000e                       : fd_sub28.asm.obj (.text)
-                  0000d7fb    00000002                       : pre_init.c.obj (.text)
-                  0000d7fd    00000001                       : startup.c.obj (.text)
+                  0000d7fb    00000009                       : _lock.c.obj (.text)
+                  0000d804    00000002                       : pre_init.c.obj (.text)
+                  0000d806    00000001                       : startup.c.obj (.text)
 
 .ebss      1    00008000    000000bc     UNINITIALIZED
                   00008000    00000086     main.obj (.ebss)
@@ -641,7 +641,7 @@ MODULE SUMMARY
     .\
        F2837xS_GlobalVariableDefs.obj   0      0                  9149              
        F2837xS_DefaultISR.obj           1413   0                  0                 
-       main.obj                         1061   101                154               
+       main.obj                         1070   101                154               
        F2837xS_SysCtrl.obj              825    0                  0                 
        SPLL_1ph_SOGI_F.obj              649    0                  0                 
        F2837xS_Gpio.obj                 580    0                  0                 
@@ -653,7 +653,7 @@ MODULE SUMMARY
        F2837xS_usDelay.obj              4      0                  0                 
        F2837xS_CodeStartBranch.obj      2      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           5230   549                9327              
+       Total:                           5239   549                9327              
                                                                                     
     D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib/rts2800_fpu32.lib
        fd_add28.asm.obj                 156    0                  0                 
@@ -677,7 +677,7 @@ MODULE SUMMARY
                                                                                     
        Stack:                           0      0                  512               
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     6148   573                9849              
+       Grand Total:                     6157   573                9849              
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -921,7 +921,7 @@ page  address   name
 abs   ffffffff  .text                                 
 0     0000d6e4  C$$EXIT                               
 0     0000d432  FD$$ADD                               
-0     0000cf6c  FD$$DIV                               
+0     0000cf75  FD$$DIV                               
 0     0000d7ed  FD$$SUB                               
 0     0000d77f  FD$$TOFS                              
 0     0000d4ce  FS$$DIV                               
@@ -990,7 +990,7 @@ abs   ffffffff  .text
 1     00005d40  _Cmpss7Regs                           
 1     00005d60  _Cmpss8Regs                           
 0     0000d597  _ConfigCpuTimer                       
-0     0000c96b  _ConfigureADC                         
+0     0000c968  _ConfigureADC                         
 1     0005d300  _CpuSysRegs                           
 1     00008086  _CpuTimer0                            
 1     00000c00  _CpuTimer0Regs                        
@@ -999,7 +999,7 @@ abs   ffffffff  .text
 1     00008096  _CpuTimer2                            
 1     00000c10  _CpuTimer2Regs                        
 0     0000c824  _CsmUnlock                            
-0     0000cadc  _CurrrentControlNoPV                  
+0     0000cabc  _CurrrentControlNoPV                  
 1     0000809e  _DAC_PTR                              
 0     0000c014  _DATALOG_ISR                          
 0     0000c258  _DMA_CH1_ISR                          
@@ -1116,7 +1116,7 @@ abs   ffffffff  .text
 0     0000d226  _GPIO_WritePin                        
 1     00007c00  _GpioCtrlRegs                         
 1     00007f00  _GpioDataRegs                         
-0     0000ca0f  _Gpio_setup1                          
+0     0000c9ef  _Gpio_setup1                          
 0     0000c899  _HALT                                 
 0     0000c8aa  _HIB                                  
 1     00008018  _I0                                   
@@ -1141,7 +1141,7 @@ abs   ffffffff  .text
 0     0000d31a  _InitEPwm11Gpio                       
 0     0000d32e  _InitEPwm12Gpio                       
 0     0000d25d  _InitEPwm1Gpio                        
-0     0000ca2d  _InitEPwm2Example                     
+0     0000ca0d  _InitEPwm2Example                     
 0     0000d26f  _InitEPwm2Gpio                        
 0     0000d281  _InitEPwm3Gpio                        
 0     0000d295  _InitEPwm4Gpio                        
@@ -1202,9 +1202,9 @@ abs   ffffffff  .text
 0     0000c226  _SPIB_TX_ISR                          
 0     0000c49c  _SPIC_RX_ISR                          
 0     0000c4a6  _SPIC_TX_ISR                          
-0     0000ccfe  _SPLL_1ph_SOGI_F_FUNC                 
-0     0000cc62  _SPLL_1ph_SOGI_F_coeff_update         
-0     0000cbd9  _SPLL_1ph_SOGI_F_init                 
+0     0000ccfc  _SPLL_1ph_SOGI_F_FUNC                 
+0     0000cc60  _SPLL_1ph_SOGI_F_coeff_update         
+0     0000cbd7  _SPLL_1ph_SOGI_F_init                 
 0     0000c88e  _STANDBY                              
 0     0000c53c  _SYS_PLL_SLIP_ISR                     
 1     00007200  _SciaRegs                             
@@ -1216,8 +1216,8 @@ abs   ffffffff  .text
 0     0000c652  _SeizeFlashPump_Bank0                 
 0     0000c661  _SeizeFlashPump_Bank1                 
 0     0000c67a  _ServiceDog                           
-0     0000c99b  _SetupADCEpwm                         
-0     0000cbd8  _SingleStagePV                        
+0     0000c983  _SetupADCEpwm                         
+0     0000cbd6  _SingleStagePV                        
 1     00006100  _SpiaRegs                             
 1     00006110  _SpibRegs                             
 1     00006120  _SpicRegs                             
@@ -1274,28 +1274,28 @@ abs   ffffffff  ___pinit__
 abs   ffffffff  ___text__                             
 0     0000d7db  __args_main                           
 1     000080b8  __lock                                
-0     0000cfff  __nop                                 
-0     0000cffb  __register_lock                       
-0     0000cff7  __register_unlock                     
+0     0000d803  __nop                                 
+0     0000d7ff  __register_lock                       
+0     0000d7fb  __register_unlock                     
 1     00000400  __stack                               
-0     0000d7fd  __system_post_cinit                   
-0     0000d7fb  __system_pre_init                     
+0     0000d806  __system_post_cinit                   
+0     0000d804  __system_pre_init                     
 1     000080ba  __unlock                              
 0     0000d6e4  _abort                                
 1     0000800a  _allow_role                           
 0     0000d68e  _c_int00                              
-0     0000cbb0  _check_role                           
+0     0000cbae  _check_role                           
 1     00008005  _cnt_role                             
 1     00008004  _cnt_watch                            
-0     0000c9e7  _configureDAC                         
+0     0000c9c7  _configureDAC                         
 0     0000d75b  _copy_in                              
 0     0000d5d2  _cos                                  
 0     0000d5d2  _cosf                                 
-0     0000cf56  _cpu_timer0_isr                       
+0     0000cf5f  _cpu_timer0_isr                       
 1     0000801e  _e0                                   
 1     00008020  _e1                                   
 1     00008022  _e2                                   
-0     0000ce62  _epwm2_isr                            
+0     0000ce60  _epwm2_isr                            
 0     0000d6e6  _exit                                 
 1     0000802c  _index                                
 1     00008032  _invSine                              
@@ -1308,7 +1308,7 @@ abs   ffffffff  ___text__
 1     00008028  _outt1                                
 1     0000802a  _outt2                                
 1     0000801c  _phi                                  
-0     0000cbc4  _reset_after_on_role                  
+0     0000cbc2  _reset_after_on_role                  
 1     00008009  _role                                 
 0     0000d635  _sin                                  
 0     0000d635  _sinf                                 
@@ -1492,24 +1492,21 @@ page  address   name
 0     0000c899  _HALT                                 
 0     0000c8aa  _HIB                                  
 0     0000c8be  _main                                 
-0     0000c96b  _ConfigureADC                         
-0     0000c99b  _SetupADCEpwm                         
-0     0000c9e7  _configureDAC                         
-0     0000ca0f  _Gpio_setup1                          
-0     0000ca2d  _InitEPwm2Example                     
-0     0000cadc  _CurrrentControlNoPV                  
-0     0000cbb0  _check_role                           
-0     0000cbc4  _reset_after_on_role                  
-0     0000cbd8  _SingleStagePV                        
-0     0000cbd9  _SPLL_1ph_SOGI_F_init                 
-0     0000cc62  _SPLL_1ph_SOGI_F_coeff_update         
-0     0000ccfe  _SPLL_1ph_SOGI_F_FUNC                 
-0     0000ce62  _epwm2_isr                            
-0     0000cf56  _cpu_timer0_isr                       
-0     0000cf6c  FD$$DIV                               
-0     0000cff7  __register_unlock                     
-0     0000cffb  __register_lock                       
-0     0000cfff  __nop                                 
+0     0000c968  _ConfigureADC                         
+0     0000c983  _SetupADCEpwm                         
+0     0000c9c7  _configureDAC                         
+0     0000c9ef  _Gpio_setup1                          
+0     0000ca0d  _InitEPwm2Example                     
+0     0000cabc  _CurrrentControlNoPV                  
+0     0000cbae  _check_role                           
+0     0000cbc2  _reset_after_on_role                  
+0     0000cbd6  _SingleStagePV                        
+0     0000cbd7  _SPLL_1ph_SOGI_F_init                 
+0     0000cc60  _SPLL_1ph_SOGI_F_coeff_update         
+0     0000ccfc  _SPLL_1ph_SOGI_F_FUNC                 
+0     0000ce60  _epwm2_isr                            
+0     0000cf5f  _cpu_timer0_isr                       
+0     0000cf75  FD$$DIV                               
 0     0000d000  _InitGpio                             
 0     0000d040  _GPIO_SetupPinMux                     
 0     0000d0cc  _GPIO_SetupPinOptions                 
@@ -1560,8 +1557,11 @@ page  address   name
 0     0000d7bf  FS$$TOFD                              
 0     0000d7db  __args_main                           
 0     0000d7ed  FD$$SUB                               
-0     0000d7fb  __system_pre_init                     
-0     0000d7fd  __system_post_cinit                   
+0     0000d7fb  __register_unlock                     
+0     0000d7ff  __register_lock                       
+0     0000d803  __nop                                 
+0     0000d804  __system_pre_init                     
+0     0000d806  __system_post_cinit                   
 1     00000400  __stack                               
 1     00000600  __STACK_END                           
 1     00000b00  _AdcaResultRegs                       

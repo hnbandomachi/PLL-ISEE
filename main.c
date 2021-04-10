@@ -2,8 +2,8 @@
 // xuat theta      --> ADAA0
 
 // Signal          Acquisition (ns)        Cycles          ACQPS       ADC PIN     CHSEL
-// Vg              200                     200/5=40        40-1=39     ADCINA0     0
-// Ig              200                     200/5=40        40-1=39     ADCINA1     1
+// Vg              200                     200/5=40        40-1=39     ADCINB2     2
+// Ig              200                     200/5=40        40-1=39     ADCINB4     4
 // Vpv             200                     200/5=40        40-1=39     ADCINB0     0
 // Ipv             200                     200/5=40        40-1=39     ADCINB1     1
 
@@ -59,7 +59,7 @@ float32 Ipv;
 float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
 float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
 float32 outt = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0;
-float32 index = 0, m = 15.0, Kp = 5;
+float32 index = 0, m = 1000.0, Kp = 20.0;
 
 int role = 0, allow_role = 0;
 // Flags for detecting ZCD
@@ -157,7 +157,9 @@ void main(void)
     // Configure the ADC and power it up
     //
     ConfigureADC();
-    // configureDAC(DAC_NUM);
+    configureDAC(DACA);
+    configureDAC(DACB);
+    configureDAC(DACC);
 
     //
     // Setup the ADC for ePWM triggered conversions on sensor
@@ -232,19 +234,19 @@ void main(void)
         //convert, wait for completion, and store results
         //start conversions immediately via software, ADCA
         //
-        AdcaRegs.ADCSOCFRC1.all = 0x0003; //SOC0 and SOC1
+        // AdcaRegs.ADCSOCFRC1.all = 0x0003; //SOC0 and SOC1
 
         //
         //start conversions immediately via software, ADCB
         //
-        AdcbRegs.ADCSOCFRC1.all = 0x0003; //SOC0 and SOC1
+        AdcbRegs.ADCSOCFRC1.all = 0x003F; //SOC0, SOC1, SOC2, SOC3, SOC4, SOC5
 
         //
         //wait for ADCA to complete, then acknowledge flag
         //
-        while (AdcaRegs.ADCINTFLG.bit.ADCINT1 == 0)
-            ;
-        AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
+        // while (AdcaRegs.ADCINTFLG.bit.ADCINT1 == 0)
+        //     ;
+        // AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
 
         //
         //wait for ADCB to complete, then acknowledge flag
@@ -256,8 +258,8 @@ void main(void)
         //
         //store results
         //
-        VgSample = AdcaResultRegs.ADCRESULT0;
-        IgSample = AdcaResultRegs.ADCRESULT1;
+        VgSample = AdcbResultRegs.ADCRESULT2;
+        IgSample = AdcbResultRegs.ADCRESULT4;
         VpvSample = AdcbResultRegs.ADCRESULT0;
         IpvSample = AdcbResultRegs.ADCRESULT1;
 
@@ -284,22 +286,22 @@ void ConfigureADC(void)
     //
     //write configurations
     //
-    AdcaRegs.ADCCTL2.bit.PRESCALE = 6; //set ADCCLK divider to /4
+    // AdcaRegs.ADCCTL2.bit.PRESCALE = 6; //set ADCCLK divider to /4
     AdcbRegs.ADCCTL2.bit.PRESCALE = 6; //set ADCCLK divider to /4
 
-    AdcSetMode(ADC_ADCA, ADC_RESOLUTION_12BIT, ADC_SIGNALMODE_SINGLE);
+    // AdcSetMode(ADC_ADCA, ADC_RESOLUTION_12BIT, ADC_SIGNALMODE_SINGLE);
     AdcSetMode(ADC_ADCB, ADC_RESOLUTION_12BIT, ADC_SIGNALMODE_SINGLE);
 
     //
     //Set pulse positions to late
     //
-    AdcaRegs.ADCCTL1.bit.INTPULSEPOS = 1;
+    // AdcaRegs.ADCCTL1.bit.INTPULSEPOS = 1;
     AdcbRegs.ADCCTL1.bit.INTPULSEPOS = 1;
 
     //
     //power up the ADC
     //
-    AdcaRegs.ADCCTL1.bit.ADCPWDNZ = 1;
+    // AdcaRegs.ADCCTL1.bit.ADCPWDNZ = 1;
     AdcbRegs.ADCCTL1.bit.ADCPWDNZ = 1;
 
     //
@@ -324,20 +326,24 @@ void SetupADCEpwm(void)
     // "TRIGSEL" search google
     EALLOW;
     // ADCA: Vg, Ig
-    AdcaRegs.ADCSOC0CTL.bit.CHSEL = 0;            //SOC0 will convert internal //connection A0
-    AdcaRegs.ADCSOC0CTL.bit.ACQPS = sensor_acqps; //sample window is 39 ~ 200 (ns) SYSCLK cycles
-    AdcaRegs.ADCSOC1CTL.bit.CHSEL = 1;            //SOC1 will convert internal //connection A1
-    AdcaRegs.ADCSOC1CTL.bit.ACQPS = sensor_acqps; //sample window is 39 ~ 200 (ns) SYSCLK cycles
+    // AdcaRegs.ADCSOC0CTL.bit.CHSEL = 0;            //SOC0 will convert internal //connection A0
+    // AdcaRegs.ADCSOC0CTL.bit.ACQPS = sensor_acqps; //sample window is 39 ~ 200 (ns) SYSCLK cycles
+    // AdcaRegs.ADCSOC1CTL.bit.CHSEL = 1;            //SOC1 will convert internal //connection A1
+    // AdcaRegs.ADCSOC1CTL.bit.ACQPS = sensor_acqps; //sample window is 39 ~ 200 (ns) SYSCLK cycles
 
-    AdcaRegs.ADCINTSEL1N2.bit.INT1SEL = 1; //end of SOC1 will set INT1 flag
-    AdcaRegs.ADCINTSEL1N2.bit.INT1E = 1;   //enable INT1 flag
-    AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1; //make sure INT1 flag is cleared
+    // AdcaRegs.ADCINTSEL1N2.bit.INT1SEL = 1; //end of SOC1 will set INT1 flag
+    // AdcaRegs.ADCINTSEL1N2.bit.INT1E = 1;   //enable INT1 flag
+    // AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1; //make sure INT1 flag is cleared
 
-    // ADCB: Vpv, Ipv
+    // ADCB: Vpv, Ipv, Vg. Ig
     AdcbRegs.ADCSOC0CTL.bit.CHSEL = 0;            //SOC0 will convert internal //connection B0
     AdcbRegs.ADCSOC0CTL.bit.ACQPS = sensor_acqps; //sample window is 39 ~ 200 (ns) SYSCLK cycles
     AdcbRegs.ADCSOC1CTL.bit.CHSEL = 1;            //SOC1 will convert internal //connection B1
     AdcbRegs.ADCSOC1CTL.bit.ACQPS = sensor_acqps; //sample window is 39 ~ 200 (ns) SYSCLK cycles
+    AdcbRegs.ADCSOC2CTL.bit.CHSEL = 2;            //SOC2 will convert internal //connection B2
+    AdcbRegs.ADCSOC2CTL.bit.ACQPS = sensor_acqps; //sample window is 39 ~ 200 (ns) SYSCLK cycles
+    AdcbRegs.ADCSOC4CTL.bit.CHSEL = 4;            //SOC4 will convert internal //connection B4
+    AdcbRegs.ADCSOC4CTL.bit.ACQPS = sensor_acqps; //sample window is 39 ~ 200 (ns) SYSCLK cycles
 
     AdcbRegs.ADCINTSEL1N2.bit.INT1SEL = 1; //end of SOC1 will set INT1 flag
     AdcbRegs.ADCINTSEL1N2.bit.INT1E = 1;   //enable INT1 flag
@@ -476,13 +482,14 @@ __interrupt void epwm2_isr(void)
 
     GpioDataRegs.GPASET.bit.GPIO2 = 1; // Load output latch
 
-    if(allow_role == 0) role = 0;
+    if (allow_role == 0)
+        role = 0;
 
     // Calculate the real value
     Vg = (float32)(VgSample - 2512.0) * 0.2344322344;
-    Ig = (float32)(IgSample - 2512.0) * 0.01932098706;
-    Vpv = (float32)(VpvSample / 4096.0);
-    Ipv = (float32)(IpvSample / 4096.0);
+    Ig = (float32)(IgSample - 2512.0) * 0.01917211329;
+    // Vpv = (float32)(VpvSample / 4096.0);
+    // Ipv = (float32)(IpvSample / 4096.0);
 
     spll1.u[0] = Vg / 400.0;
     SPLL_1ph_SOGI_F_FUNC(&spll1);
@@ -502,7 +509,9 @@ __interrupt void epwm2_isr(void)
     invSinePrev = invSine;
     // SingleStagePV();
 
-    DAC_PTR[DAC_NUM]->DACVALS.all = spll1.theta[0] * 651;
+    DAC_PTR[DACA]->DACVALS.all = spll1.sin * 2000 + 2000;
+    DAC_PTR[DACB]->DACVALS.all = spll1.theta[0] * 651;
+    DAC_PTR[DACC]->DACVALS.all = spll1.theta[0] * 651;
     // DacbRegs.DACVALS.all = outt * 1000 + 1500;
 
     // Watch variables
@@ -546,10 +555,14 @@ void CurrrentControlNoPV()
         Itemp += 0.02;
     }
     Iref = I0 * sin(spll1.theta[0] + phi * 2.0 * PI / 360.0);
+    if (invSinePrev > 0 && invSine < 0)
+        Ig = 0;
+    if (invSinePrev < 0 && invSine > 0)
+        Ig = 0;
     e0 = Iref - Ig;
     // outt0 = 940.0 * (e0 - 1.9965967452 * e1 + 0.9967536521 * e2) + 2.0 * outt1 - 1.00015792 * outt2;
     // outt0 = Kp*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
-     outt0 = Kp * (e0 - 1.996 * e1 + 0.9961579133 * e2) + 2.0 * outt1 - 1.000157914 * outt2;
+    outt0 = Kp * (e0 - 1.996 * e1 + 0.9961579133 * e2) + 2.0 * outt1 - 1.000157914 * outt2;
 
     // Update for the next loop
     e2 = e1;
@@ -558,7 +571,8 @@ void CurrrentControlNoPV()
     outt1 = outt0;
 
     outt = outt0 / m;
-    if(outt > 1000 || outt < -1000) reset_after_on_role();
+    if (outt > 1 || outt < -1)
+        reset_after_on_role();
 
     if (outt > 0.0000)
     {
