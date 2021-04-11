@@ -58,7 +58,7 @@ float32 Ipv;
 
 float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
 float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
-float32 outt = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0;
+float32 outt = 0.0, outtPrev = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0;
 float32 index = 0, m = 1000.0, Kp = 20.0;
 
 int role = 0, allow_role = 0;
@@ -482,9 +482,6 @@ __interrupt void epwm2_isr(void)
 
     GpioDataRegs.GPASET.bit.GPIO2 = 1; // Load output latch
 
-    if (allow_role == 0)
-        role = 0;
-
     // Calculate the real value
     Vg = (float32)(VgSample - 2512.0) * 0.2344322344;
     Ig = (float32)(IgSample - 2512.0) * 0.01917211329;
@@ -506,12 +503,39 @@ __interrupt void epwm2_isr(void)
     }
 
     CurrrentControlNoPV();
+    if (allow_role == 0)
+    {
+        role = 0;
+        cnt_role = 0;
+        outt = 0;
+    }
+
+    if(abs(outt - outtPrev) > 2)
+    {
+        outt = outtPrev;
+    }
+
+    if (outt > 0.0000)
+    {
+        EPwm6Regs.CMPA.bit.CMPA = 0;
+    }
+    else
+    {
+        EPwm6Regs.CMPA.bit.CMPA = PWM_PRD;
+    }
+    if (outt <= 0.0000)
+    {
+        outt += 1.00000;
+    }
+    EPwm7Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt - 1.00000); // Set compare A value
+    EPwm8Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt);           // Set compare A value
     invSinePrev = invSine;
+    outtPrev = outt;
     // SingleStagePV();
 
-    DAC_PTR[DACA]->DACVALS.all = spll1.sin * 2000 + 2000;
-    DAC_PTR[DACB]->DACVALS.all = spll1.theta[0] * 651;
-    DAC_PTR[DACC]->DACVALS.all = spll1.theta[0] * 651;
+    DAC_PTR[DACA]->DACVALS.all = Iref * 93 + 2000;
+    DAC_PTR[DACB]->DACVALS.all = Ig * 93 + 2000;
+    DAC_PTR[DACC]->DACVALS.all = outt * 2000 + 2000;
     // DacbRegs.DACVALS.all = outt * 1000 + 1500;
 
     // Watch variables
@@ -555,10 +579,10 @@ void CurrrentControlNoPV()
         Itemp += 0.02;
     }
     Iref = I0 * sin(spll1.theta[0] + phi * 2.0 * PI / 360.0);
-    if (invSinePrev > 0 && invSine < 0)
-        Ig = 0;
-    if (invSinePrev < 0 && invSine > 0)
-        Ig = 0;
+    // if (invSinePrev > 0 && invSine < 0)
+    //     Ig = 0;
+    // if (invSinePrev < 0 && invSine > 0)
+    //     Ig = 0;
     e0 = Iref - Ig;
     // outt0 = 940.0 * (e0 - 1.9965967452 * e1 + 0.9967536521 * e2) + 2.0 * outt1 - 1.00015792 * outt2;
     // outt0 = Kp*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
@@ -570,24 +594,9 @@ void CurrrentControlNoPV()
     outt2 = outt1;
     outt1 = outt0;
 
-    outt = outt0 / m;
+    outt = (float32)outt0 / m;
     if (outt > 1 || outt < -1)
         reset_after_on_role();
-
-    if (outt > 0.0000)
-    {
-        EPwm6Regs.CMPA.bit.CMPA = 0;
-    }
-    else
-    {
-        EPwm6Regs.CMPA.bit.CMPA = PWM_PRD;
-    }
-    if (outt <= 0.0000)
-    {
-        outt += 1.00000;
-    }
-    EPwm7Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt - 1.00000); // Set compare A value
-    EPwm8Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt);           // Set compare A value
 }
 
 int check_role()
