@@ -58,8 +58,8 @@ float32 Ipv;
 
 float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
 float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
-float32 outt = 0.0, outtPrev = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0;
-float32 index = 0, m = 1000.0, Kp = 20.0;
+float32 outt = 0.0, outtPrev = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0, Ts = 1.0/ISR_FREQUENCY;
+float32 index = 0, m = 400, Kp = 5, Kr = 2000;
 
 int role = 0, allow_role = 0;
 // Flags for detecting ZCD
@@ -485,10 +485,10 @@ __interrupt void epwm2_isr(void)
     // Calculate the real value
     Vg = (float32)(VgSample - 2512.0) * 0.2344322344;
     Ig = (float32)(IgSample - 2512.0) * 0.01917211329;
-    // Vpv = (float32)(VpvSample / 4096.0);
-    // Ipv = (float32)(IpvSample / 4096.0);
+    Vpv = (float32)(VpvSample - 2512)*0.2;
+    Ipv = (float32)(IpvSample - 2512)*0.05;
 
-    spll1.u[0] = Vg / 400.0;
+    spll1.u[0] = Vg * 0.0025;
     SPLL_1ph_SOGI_F_FUNC(&spll1);
     invSine = spll1.sin;
 
@@ -507,7 +507,7 @@ __interrupt void epwm2_isr(void)
     {
         role = 0;
         cnt_role = 0;
-        outt = 0;
+        // outt = 0;
     }
 
     if(abs(outt - outtPrev) > 2)
@@ -586,7 +586,8 @@ void CurrrentControlNoPV()
     e0 = Iref - Ig;
     // outt0 = 940.0 * (e0 - 1.9965967452 * e1 + 0.9967536521 * e2) + 2.0 * outt1 - 1.00015792 * outt2;
     // outt0 = Kp*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
-    outt0 = Kp * (e0 - 1.996 * e1 + 0.9961579133 * e2) + 2.0 * outt1 - 1.000157914 * outt2;
+    // outt0 = Kp * (e0 - 1.996 * e1 + 0.9961579133 * e2) + 2.0 * outt1 - 1.000157914 * outt2;
+    outt0 = Kp*e0 + (-2*Kp + Kr*Ts)*e1 + (1.000157914*Kp - Kr*Ts)*e2 + 2.0 * outt1 - 1.000157914 * outt2;
 
     // Update for the next loop
     e2 = e1;
