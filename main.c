@@ -46,20 +46,20 @@ Uint16 EPwm6_DB_Direction;
 
 SPLL_1ph_SOGI_F spll1;
 
-Uint16 VgSample, cnt_watch = 0, cnt_role = 0;
+Uint16 VgSample, cnt_watch = 0, cnt_role = 0, cnt_Prev = 1, cnt_temp = 0;
 Uint16 IgSample;
 Uint16 VpvSample;
 Uint16 IpvSample;
 
-float64 Vg, Vg_watch[sample_watch], Iref_watch[sample_watch];
+float64 Vg, Vg_watch[sample_watch], Iref_watch[sample_watch], Vpv_temp;
 float64 Ig, Ig_watch[sample_watch];
-float32 Vpv;
-float32 Ipv;
+float32 Vpv, VpvPrev;
+float32 Ipv, IpvPrev;
 
 float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
 float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
 float32 outt = 0.0, outtPrev = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0, Ts = 1.0/ISR_FREQUENCY;
-float32 index = 0, m = 400, Kp = 5, Kr = 2000;
+float32 index = 0, m = 1000, Kp = 0.5, Kr = 2000;
 
 int role = 0, allow_role = 0;
 // Flags for detecting ZCD
@@ -175,7 +175,7 @@ void main(void)
     // Configure CPU-Timer 0 to interrupt every 20us
     // 200MHz CPU Freq, 1 second Period (in uSeconds)
     //
-    ConfigCpuTimer(&CpuTimer0, 200, 20);
+    ConfigCpuTimer(&CpuTimer0, 200, 10);
 
     //
     // To ensure precise timing, use write-only instructions to write to the
@@ -485,7 +485,7 @@ __interrupt void epwm2_isr(void)
     // Calculate the real value
     Vg = (float32)(VgSample - 2512.0) * 0.2344322344;
     Ig = (float32)(IgSample - 2512.0) * 0.01917211329;
-    Vpv = (float32)(VpvSample - 2512)*0.2;
+        
     Ipv = (float32)(IpvSample - 2512)*0.05;
 
     spll1.u[0] = Vg * 0.0025;
@@ -530,6 +530,8 @@ __interrupt void epwm2_isr(void)
     EPwm7Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt - 1.00000); // Set compare A value
     EPwm8Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt);           // Set compare A value
     invSinePrev = invSine;
+    VpvPrev = Vpv;
+    IpvPrev = Ipv;
     outtPrev = outt;
     // SingleStagePV();
 
@@ -569,6 +571,21 @@ __interrupt void cpu_timer0_isr(void)
 {
 
     CpuTimer0.InterruptCount++;
+    Vpv_temp += (float32)(VpvSample - 2512)*0.202;
+    if(cnt_temp == 200)
+    {
+        Vpv = Vpv_temp/200.0;
+        if(cnt_Prev)
+        {
+            VpvPrev = Vpv;
+        }
+        if(abs(Vpv - VpvPrev) > 10) Vpv = VpvPrev;
+        Vpv_temp = 0;
+        cnt_temp = 0;
+        VpvPrev = Vpv;
+    }
+    cnt_temp++;
+
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }
 

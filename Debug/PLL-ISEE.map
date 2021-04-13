@@ -1,10 +1,10 @@
 ******************************************************************************
              TMS320C2000 Linker PC v20.2.1                     
 ******************************************************************************
->> Linked Mon Apr 12 19:35:36 2021
+>> Linked Tue Apr 13 10:46:50 2021
 
 OUTPUT FILE NAME:   <PLL-ISEE.out>
-ENTRY POINT SYMBOL: "_c_int00"  address: 0000d711
+ENTRY POINT SYMBOL: "_c_int00"  address: 0000d819
 
 
 MEMORY CONFIGURATION
@@ -13,10 +13,10 @@ MEMORY CONFIGURATION
 ----------------------  --------  ---------  --------  --------  ----  --------
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
-  RAMM0                 00000122   000002de  0000008e  00000250  RWIX
+  RAMM0                 00000122   000002de  00000096  00000248  RWIX
   RAMD0                 0000b000   00000800  00000000  00000800  RWIX
-  RAMGS0                0000c000   00001000  00000ffe  00000002  RWIX
-  RAMGS1                0000d000   00001000  0000085b  000007a5  RWIX
+  RAMGS0                0000c000   00001000  00000ffc  00000004  RWIX
+  RAMGS1                0000d000   00001000  0000096e  00000692  RWIX
   RAMGS2                0000e000   00001000  00000000  00001000  RWIX
   RAMGS3                0000f000   00001000  00000000  00001000  RWIX
   RAMGS4                00010000   00001000  00000000  00001000  RWIX
@@ -102,7 +102,7 @@ PAGE 1:
   GPIODAT               00007f00   00000030  00000030  00000000  RWIX
   RAMLS01               00008000   00001000  000000fc  00000f04  RWIX
   RAMLS2                00009000   00000800  00000000  00000800  RWIX
-  RAMLS3_RAMLS4_RAMLS5  00009800   00001800  000001cc  00001634  RWIX
+  RAMLS3_RAMLS4_RAMLS5  00009800   00001800  000001d0  00001630  RWIX
   RAMD1                 0000b800   00000800  00000000  00000800  RWIX
   RAMGS7                00013000   00001000  00000000  00001000  RWIX
   RAMGS8                00014000   00001000  00000000  00001000  RWIX
@@ -153,13 +153,13 @@ codestart
 *          0    00000000    00000002     
                   00000000    00000002     F2837xS_CodeStartBranch.obj (codestart)
 
-.cinit     0    00000122    0000008a     
-                  00000122    00000065     main.obj (.cinit)
-                  00000187    0000000e     rts2800_fpu32.lib : exit.c.obj (.cinit)
-                  00000195    0000000b     main.obj (.cinit:_DAC_PTR)
-                  000001a0    00000005     rts2800_fpu32.lib : _lock.c.obj (.cinit:__lock)
-                  000001a5    00000005                       : _lock.c.obj (.cinit:__unlock)
-                  000001aa    00000002     --HOLE-- [fill = 0]
+.cinit     0    00000122    00000092     
+                  00000122    0000006d     main.obj (.cinit)
+                  0000018f    0000000e     rts2800_fpu32.lib : exit.c.obj (.cinit)
+                  0000019d    0000000b     main.obj (.cinit:_DAC_PTR)
+                  000001a8    00000005     rts2800_fpu32.lib : _lock.c.obj (.cinit:__lock)
+                  000001ad    00000005                       : _lock.c.obj (.cinit:__unlock)
+                  000001b2    00000002     --HOLE-- [fill = 0]
 
 .pinit     0    00000122    00000000     UNINITIALIZED
 
@@ -169,13 +169,13 @@ codestart
 .stack     1    00000400    00000200     UNINITIALIZED
                   00000400    00000200     --HOLE--
 
-.econst    1    00009800    000001cc     
+.econst    1    00009800    000001d0     
                   00009800    000001c0     F2837xS_PieVect.obj (.econst:_PieVectTableInit)
-                  000099c0    0000000c     main.obj (.econst)
+                  000099c0    00000010     main.obj (.econst)
 
 .TI.ramfunc 
-*          0    000001ac    00000004     
-                  000001ac    00000004     F2837xS_usDelay.obj (.TI.ramfunc)
+*          0    000001b4    00000004     
+                  000001b4    00000004     F2837xS_usDelay.obj (.TI.ramfunc)
 
 GETBUFFER 
 *          0    0003f800    00000000     DSECT
@@ -592,37 +592,38 @@ CpuSysRegsFile
 *          1    0005d300    00000082     UNINITIALIZED
                   0005d300    00000082     F2837xS_GlobalVariableDefs.obj (CpuSysRegsFile)
 
-.text.1    0    0000c000    00000ffe     
+.text.1    0    0000c000    00000ffc     
                   0000c000    00000585     F2837xS_DefaultISR.obj (.text:retain)
                   0000c585    00000339     F2837xS_SysCtrl.obj (.text)
-                  0000c8be    000002d6     main.obj (.text)
-                  0000cb94    00000289     SPLL_1ph_SOGI_F.obj (.text)
-                  0000ce1d    00000198     main.obj (.text:retain)
-                  0000cfb5    00000029     rts2800_fpu32.lib : exit.c.obj (.text)
-                  0000cfde    0000001d                       : memcpy.c.obj (.text)
-                  0000cffb    00000002                       : pre_init.c.obj (.text)
-                  0000cffd    00000001                       : startup.c.obj (.text)
+                  0000c8be    000002de     main.obj (.text)
+                  0000cb9c    00000289     SPLL_1ph_SOGI_F.obj (.text)
+                  0000ce25    000000fd     F2837xS_EPwm.obj (.text)
+                  0000cf22    0000009c     rts2800_fpu32.lib : fd_add28.asm.obj (.text)
+                  0000cfbe    00000029                       : exit.c.obj (.text)
+                  0000cfe7    00000012                       : args_main.c.obj (.text)
+                  0000cff9    00000002                       : pre_init.c.obj (.text)
+                  0000cffb    00000001                       : startup.c.obj (.text)
 
-.text.2    0    0000d000    0000085b     
+.text.2    0    0000d000    0000096e     
                   0000d000    00000244     F2837xS_Gpio.obj (.text)
-                  0000d244    000000fd     F2837xS_EPwm.obj (.text)
-                  0000d341    000000f1     F2837xS_Adc.obj (.text)
-                  0000d432    0000009c     rts2800_fpu32.lib : fd_add28.asm.obj (.text)
-                  0000d4ce    00000088                       : fs_div28.asm.obj (.text)
-                  0000d556    00000083                       : fd_mpy28.asm.obj (.text)
-                  0000d5d9    0000007c     F2837xS_CpuTimers.obj (.text)
-                  0000d655    00000063     rts2800_fpu32.lib : s_cosf.c.obj (.text)
-                  0000d6b8    00000059                       : s_sinf.c.obj (.text)
-                  0000d711    00000056                       : boot28.asm.obj (.text)
-                  0000d767    00000028     F2837xS_PieCtrl.obj (.text)
-                  0000d78f    00000026     F2837xS_PieVect.obj (.text)
-                  0000d7b5    00000024     rts2800_fpu32.lib : cpy_tbl.c.obj (.text)
-                  0000d7d9    00000023                       : fd_tofsfpu32.asm.obj (.text)
-                  0000d7fc    0000001c                       : fs_tofdfpu32.asm.obj (.text)
-                  0000d818    0000001a                       : fd_tou28.asm.obj (.text)
-                  0000d832    00000012                       : args_main.c.obj (.text)
-                  0000d844    0000000e                       : fd_sub28.asm.obj (.text)
-                  0000d852    00000009                       : _lock.c.obj (.text)
+                  0000d244    00000216     main.obj (.text:retain)
+                  0000d45a    000000f1     F2837xS_Adc.obj (.text)
+                  0000d54b    0000008b     rts2800_fpu32.lib : fd_div28.asm.obj (.text)
+                  0000d5d6    00000088                       : fs_div28.asm.obj (.text)
+                  0000d65e    00000083                       : fd_mpy28.asm.obj (.text)
+                  0000d6e1    0000007c     F2837xS_CpuTimers.obj (.text)
+                  0000d75d    00000063     rts2800_fpu32.lib : s_cosf.c.obj (.text)
+                  0000d7c0    00000059                       : s_sinf.c.obj (.text)
+                  0000d819    00000056                       : boot28.asm.obj (.text)
+                  0000d86f    00000028     F2837xS_PieCtrl.obj (.text)
+                  0000d897    00000026     F2837xS_PieVect.obj (.text)
+                  0000d8bd    00000024     rts2800_fpu32.lib : cpy_tbl.c.obj (.text)
+                  0000d8e1    00000023                       : fd_tofsfpu32.asm.obj (.text)
+                  0000d904    0000001d                       : memcpy.c.obj (.text)
+                  0000d921    0000001c                       : fs_tofdfpu32.asm.obj (.text)
+                  0000d93d    0000001a                       : fd_tou28.asm.obj (.text)
+                  0000d957    0000000e                       : fd_sub28.asm.obj (.text)
+                  0000d965    00000009                       : _lock.c.obj (.text)
 
 .ebss      1    00008000    000000fc     UNINITIALIZED
                   00008000    000000c6     main.obj (.ebss)
@@ -641,7 +642,7 @@ MODULE SUMMARY
        ------                           ----   ----------------   ------------------
     .\
        F2837xS_GlobalVariableDefs.obj   0      0                  9149              
-       main.obj                         1134   124                218               
+       main.obj                         1268   136                218               
        F2837xS_DefaultISR.obj           1413   0                  0                 
        F2837xS_SysCtrl.obj              825    0                  0                 
        SPLL_1ph_SOGI_F.obj              649    0                  0                 
@@ -654,10 +655,11 @@ MODULE SUMMARY
        F2837xS_usDelay.obj              4      0                  0                 
        F2837xS_CodeStartBranch.obj      2      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           5303   572                9391              
+       Total:                           5437   584                9391              
                                                                                     
     D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib/rts2800_fpu32.lib
        fd_add28.asm.obj                 156    0                  0                 
+       fd_div28.asm.obj                 139    0                  0                 
        fs_div28.asm.obj                 136    0                  0                 
        fd_mpy28.asm.obj                 131    0                  0                 
        s_cosf.c.obj                     99     0                  0                 
@@ -675,11 +677,11 @@ MODULE SUMMARY
        pre_init.c.obj                   2      0                  0                 
        startup.c.obj                    1      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           936    24                 10                
+       Total:                           1075   24                 10                
                                                                                     
        Stack:                           0      0                  512               
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     6239   596                9913              
+       Grand Total:                     6512   608                9913              
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -821,38 +823,43 @@ address     data page           name
 00008003     200 (00008000)     _VgSample
 00008004     200 (00008000)     _cnt_watch
 00008005     200 (00008000)     _cnt_role
-00008006     200 (00008000)     _IgSample
-00008007     200 (00008000)     _VpvSample
-00008008     200 (00008000)     _IpvSample
-00008009     200 (00008000)     _role
-0000800a     200 (00008000)     _allow_role
-0000800c     200 (00008000)     _EPwm7TimerIntCount
-0000800e     200 (00008000)     _EPwm8TimerIntCount
-00008010     200 (00008000)     _EPwm6TimerIntCount
-00008012     200 (00008000)     _Vpv
-00008014     200 (00008000)     _Ipv
-00008016     200 (00008000)     _Iref
-00008018     200 (00008000)     _I0
-0000801a     200 (00008000)     _Itemp
-0000801c     200 (00008000)     _phi
-0000801e     200 (00008000)     _e0
-00008020     200 (00008000)     _e1
-00008022     200 (00008000)     _e2
-00008024     200 (00008000)     _outt
-00008026     200 (00008000)     _outtPrev
-00008028     200 (00008000)     _outt0
-0000802a     200 (00008000)     _outt1
-0000802c     200 (00008000)     _outt2
-0000802e     200 (00008000)     _Ts
-00008030     200 (00008000)     _index
-00008032     200 (00008000)     _m
-00008034     200 (00008000)     _Kp
-00008036     200 (00008000)     _Kr
-00008038     200 (00008000)     _invSine
-0000803a     200 (00008000)     _invSinePrev
-0000803c     200 (00008000)     _Vg
+00008006     200 (00008000)     _cnt_Prev
+00008007     200 (00008000)     _cnt_temp
+00008008     200 (00008000)     _IgSample
+00008009     200 (00008000)     _VpvSample
+0000800a     200 (00008000)     _IpvSample
+0000800b     200 (00008000)     _role
+0000800c     200 (00008000)     _allow_role
+0000800e     200 (00008000)     _EPwm7TimerIntCount
+00008010     200 (00008000)     _EPwm8TimerIntCount
+00008012     200 (00008000)     _EPwm6TimerIntCount
+00008014     200 (00008000)     _Vpv
+00008016     200 (00008000)     _VpvPrev
+00008018     200 (00008000)     _Ipv
+0000801a     200 (00008000)     _IpvPrev
+0000801c     200 (00008000)     _Iref
+0000801e     200 (00008000)     _I0
+00008020     200 (00008000)     _Itemp
+00008022     200 (00008000)     _phi
+00008024     200 (00008000)     _e0
+00008026     200 (00008000)     _e1
+00008028     200 (00008000)     _e2
+0000802a     200 (00008000)     _outt
+0000802c     200 (00008000)     _outtPrev
+0000802e     200 (00008000)     _outt0
+00008030     200 (00008000)     _outt1
+00008032     200 (00008000)     _outt2
+00008034     200 (00008000)     _Ts
+00008036     200 (00008000)     _index
+00008038     200 (00008000)     _m
+0000803a     200 (00008000)     _Kp
+0000803c     200 (00008000)     _Kr
+0000803e     200 (00008000)     _invSine
 
-00008040     201 (00008040)     _Ig
+00008040     201 (00008040)     _invSinePrev
+00008042     201 (00008040)     _Vg
+00008046     201 (00008040)     _Vpv_temp
+0000804a     201 (00008040)     _Ig
 
 00008080     202 (00008080)     _spll1
 
@@ -925,14 +932,15 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 page  address   name                                  
 ----  -------   ----                                  
 abs   ffffffff  .text                                 
-0     0000cfb5  C$$EXIT                               
-0     0000d432  FD$$ADD                               
-0     0000d556  FD$$MPY                               
-0     0000d844  FD$$SUB                               
-0     0000d7d9  FD$$TOFS                              
-0     0000d818  FD$$TOU                               
-0     0000d4ce  FS$$DIV                               
-0     0000d7fc  FS$$TOFD                              
+0     0000cfbe  C$$EXIT                               
+0     0000cf22  FD$$ADD                               
+0     0000d54b  FD$$DIV                               
+0     0000d65e  FD$$MPY                               
+0     0000d957  FD$$SUB                               
+0     0000d8e1  FD$$TOFS                              
+0     0000d93d  FD$$TOU                               
+0     0000d5d6  FS$$DIV                               
+0     0000d921  FS$$TOFD                              
 0     0000c0be  _ADCA1_ISR                            
 0     0000c33e  _ADCA2_ISR                            
 0     0000c348  _ADCA3_ISR                            
@@ -955,7 +963,7 @@ abs   ffffffff  .text
 0     0000c4ec  _ADCD_EVT_ISR                         
 0     0000c546  _AUX_PLL_SLIP_ISR                     
 1     0005f4c0  _AccessProtectionRegs                 
-0     0000d341  _AdcSetMode                           
+0     0000d45a  _AdcSetMode                           
 1     00007400  _AdcaRegs                             
 1     00000b00  _AdcaResultRegs                       
 1     00007480  _AdcbRegs                             
@@ -982,7 +990,7 @@ abs   ffffffff  .text
 0     0000c3ca  _CLA1_8_ISR                           
 0     0000c550  _CLA_OVERFLOW_ISR                     
 0     0000c55a  _CLA_UNDERFLOW_ISR                    
-0     0000d3f8  _CalAdcINL                            
+0     0000d511  _CalAdcINL                            
 1     00048000  _CanaRegs                             
 1     0004a000  _CanbRegs                             
 1     00001400  _Cla1Regs                             
@@ -996,7 +1004,7 @@ abs   ffffffff  .text
 1     00005d20  _Cmpss6Regs                           
 1     00005d40  _Cmpss7Regs                           
 1     00005d60  _Cmpss8Regs                           
-0     0000d61a  _ConfigCpuTimer                       
+0     0000d722  _ConfigCpuTimer                       
 0     0000c968  _ConfigureADC                         
 1     0005d300  _CpuSysRegs                           
 1     000080c6  _CpuTimer0                            
@@ -1076,13 +1084,13 @@ abs   ffffffff  .text
 1     00004300  _EPwm4Regs                            
 1     00004400  _EPwm5Regs                            
 1     00004500  _EPwm6Regs                            
-1     00008010  _EPwm6TimerIntCount                   
+1     00008012  _EPwm6TimerIntCount                   
 1     00008002  _EPwm6_DB_Direction                   
 1     00004600  _EPwm7Regs                            
-1     0000800c  _EPwm7TimerIntCount                   
+1     0000800e  _EPwm7TimerIntCount                   
 1     00008000  _EPwm7_DB_Direction                   
 1     00004700  _EPwm8Regs                            
-1     0000800e  _EPwm8TimerIntCount                   
+1     00008010  _EPwm8TimerIntCount                   
 1     00008001  _EPwm8_DB_Direction                   
 1     00004800  _EPwm9Regs                            
 1     00007a00  _EPwmXbarRegs                         
@@ -1098,8 +1106,8 @@ abs   ffffffff  .text
 1     00047800  _Emif2Regs                            
 1     00000d01  _EmuBMode                             
 1     00000d00  _EmuKey                               
-0     0000d786  _EnableInterrupts                     
-0     000001ac  _F28x_usDelay                         
+0     0000d88e  _EnableInterrupts                     
+0     000001b4  _F28x_usDelay                         
 0     0000c528  _FLASH_CORRECTABLE_ERROR_ISR          
 0     0000c3fc  _FPU_OVERFLOW_ISR                     
 0     0000c406  _FPU_UNDERFLOW_ISR                    
@@ -1126,7 +1134,7 @@ abs   ffffffff  .text
 0     0000c9ef  _Gpio_setup1                          
 0     0000c899  _HALT                                 
 0     0000c8aa  _HIB                                  
-1     00008018  _I0                                   
+1     0000801e  _I0                                   
 0     0000c29e  _I2CA_FIFO_ISR                        
 0     0000c294  _I2CA_ISR                             
 0     0000c2b2  _I2CB_FIFO_ISR                        
@@ -1139,39 +1147,40 @@ abs   ffffffff  .text
 0     0000c41a  _IPC1_ISR                             
 0     0000c424  _IPC2_ISR                             
 0     0000c42e  _IPC3_ISR                             
-1     00008040  _Ig                                   
-1     00008006  _IgSample                             
+1     0000804a  _Ig                                   
+1     00008008  _IgSample                             
 1     000080ec  _Ig_watch                             
 0     0000c75c  _InitAuxPll                           
-0     0000d5d9  _InitCpuTimers                        
-0     0000d307  _InitEPwm10Gpio                       
-0     0000d31a  _InitEPwm11Gpio                       
-0     0000d32e  _InitEPwm12Gpio                       
-0     0000d25d  _InitEPwm1Gpio                        
+0     0000d6e1  _InitCpuTimers                        
+0     0000cee8  _InitEPwm10Gpio                       
+0     0000cefb  _InitEPwm11Gpio                       
+0     0000cf0f  _InitEPwm12Gpio                       
+0     0000ce3e  _InitEPwm1Gpio                        
 0     0000ca0d  _InitEPwm2Example                     
-0     0000d26f  _InitEPwm2Gpio                        
-0     0000d281  _InitEPwm3Gpio                        
-0     0000d295  _InitEPwm4Gpio                        
-0     0000d2a9  _InitEPwm5Gpio                        
-0     0000d2bb  _InitEPwm6Gpio                        
-0     0000d2cd  _InitEPwm7Gpio                        
-0     0000d2e1  _InitEPwm8Gpio                        
-0     0000d2f5  _InitEPwm9Gpio                        
-0     0000d244  _InitEPwmGpio                         
+0     0000ce50  _InitEPwm2Gpio                        
+0     0000ce62  _InitEPwm3Gpio                        
+0     0000ce76  _InitEPwm4Gpio                        
+0     0000ce8a  _InitEPwm5Gpio                        
+0     0000ce9c  _InitEPwm6Gpio                        
+0     0000ceae  _InitEPwm7Gpio                        
+0     0000cec2  _InitEPwm8Gpio                        
+0     0000ced6  _InitEPwm9Gpio                        
+0     0000ce25  _InitEPwmGpio                         
 0     0000d000  _InitGpio                             
 0     0000c5b6  _InitPeripheralClocks                 
-0     0000d767  _InitPieCtrl                          
-0     0000d78f  _InitPieVectTable                     
+0     0000d86f  _InitPieCtrl                          
+0     0000d897  _InitPieVectTable                     
 0     0000c585  _InitSysCtrl                          
 0     0000c696  _InitSysPll                           
 1     00007900  _InputXbarRegs                        
-1     00008014  _Ipv                                  
-1     00008008  _IpvSample                            
-1     00008016  _Iref                                 
+1     00008018  _Ipv                                  
+1     0000801a  _IpvPrev                              
+1     0000800a  _IpvSample                            
+1     0000801c  _Iref                                 
 1     000080f0  _Iref_watch                           
-1     0000801a  _Itemp                                
-1     00008034  _Kp                                   
-1     00008036  _Kr                                   
+1     00008020  _Itemp                                
+1     0000803a  _Kp                                   
+1     0000803c  _Kr                                   
 0     0000c230  _MCBSPA_RX_ISR                        
 0     0000c23a  _MCBSPA_TX_ISR                        
 0     0000c244  _MCBSPB_RX_ISR                        
@@ -1210,9 +1219,9 @@ abs   ffffffff  .text
 0     0000c226  _SPIB_TX_ISR                          
 0     0000c49c  _SPIC_RX_ISR                          
 0     0000c4a6  _SPIC_TX_ISR                          
-0     0000ccb9  _SPLL_1ph_SOGI_F_FUNC                 
-0     0000cc1d  _SPLL_1ph_SOGI_F_coeff_update         
-0     0000cb94  _SPLL_1ph_SOGI_F_init                 
+0     0000ccc1  _SPLL_1ph_SOGI_F_FUNC                 
+0     0000cc25  _SPLL_1ph_SOGI_F_coeff_update         
+0     0000cb9c  _SPLL_1ph_SOGI_F_init                 
 0     0000c88e  _STANDBY                              
 0     0000c53c  _SYS_PLL_SLIP_ISR                     
 1     00007200  _SciaRegs                             
@@ -1225,7 +1234,7 @@ abs   ffffffff  .text
 0     0000c661  _SeizeFlashPump_Bank1                 
 0     0000c67a  _ServiceDog                           
 0     0000c983  _SetupADCEpwm                         
-0     0000cb93  _SingleStagePV                        
+0     0000cb9b  _SingleStagePV                        
 1     00006100  _SpiaRegs                             
 1     00006110  _SpibRegs                             
 1     00006120  _SpicRegs                             
@@ -1236,7 +1245,7 @@ abs   ffffffff  .text
 0     0000c0fa  _TIMER0_ISR                           
 0     0000c000  _TIMER1_ISR                           
 0     0000c00a  _TIMER2_ISR                           
-1     0000802e  _Ts                                   
+1     00008034  _Ts                                   
 0     0000c4b0  _UPPA_ISR                             
 0     0000c4ba  _USBA_ISR                             
 0     0000c0a0  _USER10_ISR                           
@@ -1253,11 +1262,13 @@ abs   ffffffff  .text
 0     0000c096  _USER9_ISR                            
 1     00006200  _UppRegs                              
 0     0000c3f2  _VCU_ISR                              
-1     0000803c  _Vg                                   
+1     00008042  _Vg                                   
 1     00008003  _VgSample                             
 1     000080f4  _Vg_watch                             
-1     00008012  _Vpv                                  
-1     00008007  _VpvSample                            
+1     00008014  _Vpv                                  
+1     00008016  _VpvPrev                              
+1     00008009  _VpvSample                            
+1     00008046  _Vpv_temp                             
 0     0000c104  _WAKE_ISR                             
 1     00007000  _WdRegs                               
 0     0000c0dc  _XINT1_ISR                            
@@ -1281,47 +1292,49 @@ abs   ffffffff  ___c_args__
 abs   ffffffff  ___etext__                            
 abs   ffffffff  ___pinit__                            
 abs   ffffffff  ___text__                             
-0     0000d832  __args_main                           
+0     0000cfe7  __args_main                           
 1     000080f8  __lock                                
-0     0000d85a  __nop                                 
-0     0000d856  __register_lock                       
-0     0000d852  __register_unlock                     
+0     0000d96d  __nop                                 
+0     0000d969  __register_lock                       
+0     0000d965  __register_unlock                     
 1     00000400  __stack                               
-0     0000cffd  __system_post_cinit                   
-0     0000cffb  __system_pre_init                     
+0     0000cffb  __system_post_cinit                   
+0     0000cff9  __system_pre_init                     
 1     000080fa  __unlock                              
-0     0000cfb5  _abort                                
-1     0000800a  _allow_role                           
-0     0000d711  _c_int00                              
-0     0000cb6b  _check_role                           
+0     0000cfbe  _abort                                
+1     0000800c  _allow_role                           
+0     0000d819  _c_int00                              
+0     0000cb71  _check_role                           
+1     00008006  _cnt_Prev                             
 1     00008005  _cnt_role                             
+1     00008007  _cnt_temp                             
 1     00008004  _cnt_watch                            
 0     0000c9c7  _configureDAC                         
-0     0000d7b5  _copy_in                              
-0     0000d655  _cos                                  
-0     0000d655  _cosf                                 
-0     0000cf9f  _cpu_timer0_isr                       
-1     0000801e  _e0                                   
-1     00008020  _e1                                   
-1     00008022  _e2                                   
-0     0000ce1d  _epwm2_isr                            
-0     0000cfb7  _exit                                 
-1     00008030  _index                                
-1     00008038  _invSine                              
-1     0000803a  _invSinePrev                          
-1     00008032  _m                                    
+0     0000d8bd  _copy_in                              
+0     0000d75d  _cos                                  
+0     0000d75d  _cosf                                 
+0     0000d3be  _cpu_timer0_isr                       
+1     00008024  _e0                                   
+1     00008026  _e1                                   
+1     00008028  _e2                                   
+0     0000d244  _epwm2_isr                            
+0     0000cfc0  _exit                                 
+1     00008036  _index                                
+1     0000803e  _invSine                              
+1     00008040  _invSinePrev                          
+1     00008038  _m                                    
 0     0000c8be  _main                                 
-0     0000cfde  _memcpy                               
-1     00008024  _outt                                 
-1     00008028  _outt0                                
-1     0000802a  _outt1                                
-1     0000802c  _outt2                                
-1     00008026  _outtPrev                             
-1     0000801c  _phi                                  
-0     0000cb7f  _reset_after_on_role                  
-1     00008009  _role                                 
-0     0000d6b8  _sin                                  
-0     0000d6b8  _sinf                                 
+0     0000d904  _memcpy                               
+1     0000802a  _outt                                 
+1     0000802e  _outt0                                
+1     00008030  _outt1                                
+1     00008032  _outt2                                
+1     0000802c  _outtPrev                             
+1     00008022  _phi                                  
+0     0000cb87  _reset_after_on_role                  
+1     0000800b  _role                                 
+0     0000d7c0  _sin                                  
+0     0000d7c0  _sinf                                 
 1     00008080  _spll1                                
 abs   ffffffff  binit                                 
 0     00000122  cinit                                 
@@ -1337,7 +1350,7 @@ page  address   name
 0     00000000  code_start                            
 0     00000122  ___cinit__                            
 0     00000122  cinit                                 
-0     000001ac  _F28x_usDelay                         
+0     000001b4  _F28x_usDelay                         
 0     00000ce0  _Cla1SoftIntRegs                      
 0     0000c000  _TIMER1_ISR                           
 0     0000c00a  _TIMER2_ISR                           
@@ -1508,20 +1521,32 @@ page  address   name
 0     0000c9ef  _Gpio_setup1                          
 0     0000ca0d  _InitEPwm2Example                     
 0     0000cabc  _CurrrentControlNoPV                  
-0     0000cb6b  _check_role                           
-0     0000cb7f  _reset_after_on_role                  
-0     0000cb93  _SingleStagePV                        
-0     0000cb94  _SPLL_1ph_SOGI_F_init                 
-0     0000cc1d  _SPLL_1ph_SOGI_F_coeff_update         
-0     0000ccb9  _SPLL_1ph_SOGI_F_FUNC                 
-0     0000ce1d  _epwm2_isr                            
-0     0000cf9f  _cpu_timer0_isr                       
-0     0000cfb5  C$$EXIT                               
-0     0000cfb5  _abort                                
-0     0000cfb7  _exit                                 
-0     0000cfde  _memcpy                               
-0     0000cffb  __system_pre_init                     
-0     0000cffd  __system_post_cinit                   
+0     0000cb71  _check_role                           
+0     0000cb87  _reset_after_on_role                  
+0     0000cb9b  _SingleStagePV                        
+0     0000cb9c  _SPLL_1ph_SOGI_F_init                 
+0     0000cc25  _SPLL_1ph_SOGI_F_coeff_update         
+0     0000ccc1  _SPLL_1ph_SOGI_F_FUNC                 
+0     0000ce25  _InitEPwmGpio                         
+0     0000ce3e  _InitEPwm1Gpio                        
+0     0000ce50  _InitEPwm2Gpio                        
+0     0000ce62  _InitEPwm3Gpio                        
+0     0000ce76  _InitEPwm4Gpio                        
+0     0000ce8a  _InitEPwm5Gpio                        
+0     0000ce9c  _InitEPwm6Gpio                        
+0     0000ceae  _InitEPwm7Gpio                        
+0     0000cec2  _InitEPwm8Gpio                        
+0     0000ced6  _InitEPwm9Gpio                        
+0     0000cee8  _InitEPwm10Gpio                       
+0     0000cefb  _InitEPwm11Gpio                       
+0     0000cf0f  _InitEPwm12Gpio                       
+0     0000cf22  FD$$ADD                               
+0     0000cfbe  C$$EXIT                               
+0     0000cfbe  _abort                                
+0     0000cfc0  _exit                                 
+0     0000cfe7  __args_main                           
+0     0000cff9  __system_pre_init                     
+0     0000cffb  __system_post_cinit                   
 0     0000d000  _InitGpio                             
 0     0000d040  _GPIO_SetupPinMux                     
 0     0000d0cc  _GPIO_SetupPinOptions                 
@@ -1536,43 +1561,32 @@ page  address   name
 0     0000d1f9  _GPIO_EnableUnbondedIOPullups         
 0     0000d20f  _GPIO_ReadPin                         
 0     0000d226  _GPIO_WritePin                        
-0     0000d244  _InitEPwmGpio                         
-0     0000d25d  _InitEPwm1Gpio                        
-0     0000d26f  _InitEPwm2Gpio                        
-0     0000d281  _InitEPwm3Gpio                        
-0     0000d295  _InitEPwm4Gpio                        
-0     0000d2a9  _InitEPwm5Gpio                        
-0     0000d2bb  _InitEPwm6Gpio                        
-0     0000d2cd  _InitEPwm7Gpio                        
-0     0000d2e1  _InitEPwm8Gpio                        
-0     0000d2f5  _InitEPwm9Gpio                        
-0     0000d307  _InitEPwm10Gpio                       
-0     0000d31a  _InitEPwm11Gpio                       
-0     0000d32e  _InitEPwm12Gpio                       
-0     0000d341  _AdcSetMode                           
-0     0000d3f8  _CalAdcINL                            
-0     0000d432  FD$$ADD                               
-0     0000d4ce  FS$$DIV                               
-0     0000d556  FD$$MPY                               
-0     0000d5d9  _InitCpuTimers                        
-0     0000d61a  _ConfigCpuTimer                       
-0     0000d655  _cos                                  
-0     0000d655  _cosf                                 
-0     0000d6b8  _sin                                  
-0     0000d6b8  _sinf                                 
-0     0000d711  _c_int00                              
-0     0000d767  _InitPieCtrl                          
-0     0000d786  _EnableInterrupts                     
-0     0000d78f  _InitPieVectTable                     
-0     0000d7b5  _copy_in                              
-0     0000d7d9  FD$$TOFS                              
-0     0000d7fc  FS$$TOFD                              
-0     0000d818  FD$$TOU                               
-0     0000d832  __args_main                           
-0     0000d844  FD$$SUB                               
-0     0000d852  __register_unlock                     
-0     0000d856  __register_lock                       
-0     0000d85a  __nop                                 
+0     0000d244  _epwm2_isr                            
+0     0000d3be  _cpu_timer0_isr                       
+0     0000d45a  _AdcSetMode                           
+0     0000d511  _CalAdcINL                            
+0     0000d54b  FD$$DIV                               
+0     0000d5d6  FS$$DIV                               
+0     0000d65e  FD$$MPY                               
+0     0000d6e1  _InitCpuTimers                        
+0     0000d722  _ConfigCpuTimer                       
+0     0000d75d  _cos                                  
+0     0000d75d  _cosf                                 
+0     0000d7c0  _sin                                  
+0     0000d7c0  _sinf                                 
+0     0000d819  _c_int00                              
+0     0000d86f  _InitPieCtrl                          
+0     0000d88e  _EnableInterrupts                     
+0     0000d897  _InitPieVectTable                     
+0     0000d8bd  _copy_in                              
+0     0000d8e1  FD$$TOFS                              
+0     0000d904  _memcpy                               
+0     0000d921  FS$$TOFD                              
+0     0000d93d  FD$$TOU                               
+0     0000d957  FD$$SUB                               
+0     0000d965  __register_unlock                     
+0     0000d969  __register_lock                       
+0     0000d96d  __nop                                 
 1     00000400  __stack                               
 1     00000600  __STACK_END                           
 1     00000b00  _AdcaResultRegs                       
@@ -1655,37 +1669,42 @@ page  address   name
 1     00008003  _VgSample                             
 1     00008004  _cnt_watch                            
 1     00008005  _cnt_role                             
-1     00008006  _IgSample                             
-1     00008007  _VpvSample                            
-1     00008008  _IpvSample                            
-1     00008009  _role                                 
-1     0000800a  _allow_role                           
-1     0000800c  _EPwm7TimerIntCount                   
-1     0000800e  _EPwm8TimerIntCount                   
-1     00008010  _EPwm6TimerIntCount                   
-1     00008012  _Vpv                                  
-1     00008014  _Ipv                                  
-1     00008016  _Iref                                 
-1     00008018  _I0                                   
-1     0000801a  _Itemp                                
-1     0000801c  _phi                                  
-1     0000801e  _e0                                   
-1     00008020  _e1                                   
-1     00008022  _e2                                   
-1     00008024  _outt                                 
-1     00008026  _outtPrev                             
-1     00008028  _outt0                                
-1     0000802a  _outt1                                
-1     0000802c  _outt2                                
-1     0000802e  _Ts                                   
-1     00008030  _index                                
-1     00008032  _m                                    
-1     00008034  _Kp                                   
-1     00008036  _Kr                                   
-1     00008038  _invSine                              
-1     0000803a  _invSinePrev                          
-1     0000803c  _Vg                                   
-1     00008040  _Ig                                   
+1     00008006  _cnt_Prev                             
+1     00008007  _cnt_temp                             
+1     00008008  _IgSample                             
+1     00008009  _VpvSample                            
+1     0000800a  _IpvSample                            
+1     0000800b  _role                                 
+1     0000800c  _allow_role                           
+1     0000800e  _EPwm7TimerIntCount                   
+1     00008010  _EPwm8TimerIntCount                   
+1     00008012  _EPwm6TimerIntCount                   
+1     00008014  _Vpv                                  
+1     00008016  _VpvPrev                              
+1     00008018  _Ipv                                  
+1     0000801a  _IpvPrev                              
+1     0000801c  _Iref                                 
+1     0000801e  _I0                                   
+1     00008020  _Itemp                                
+1     00008022  _phi                                  
+1     00008024  _e0                                   
+1     00008026  _e1                                   
+1     00008028  _e2                                   
+1     0000802a  _outt                                 
+1     0000802c  _outtPrev                             
+1     0000802e  _outt0                                
+1     00008030  _outt1                                
+1     00008032  _outt2                                
+1     00008034  _Ts                                   
+1     00008036  _index                                
+1     00008038  _m                                    
+1     0000803a  _Kp                                   
+1     0000803c  _Kr                                   
+1     0000803e  _invSine                              
+1     00008040  _invSinePrev                          
+1     00008042  _Vg                                   
+1     00008046  _Vpv_temp                             
+1     0000804a  _Ig                                   
 1     00008080  _spll1                                
 1     000080c6  _CpuTimer0                            
 1     000080ce  _CpuTimer1                            
@@ -1739,4 +1758,4 @@ abs   ffffffff  binit
 abs   ffffffff  etext                                 
 abs   ffffffff  pinit                                 
 
-[404 symbols]
+[410 symbols]
