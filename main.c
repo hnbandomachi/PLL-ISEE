@@ -59,7 +59,7 @@ float32 Ipv, IpvPrev;
 float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
 float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
 float32 outt = 0.0, outtPrev = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0, Ts = 1.0/ISR_FREQUENCY;
-float32 index = 0, m = 1000, Kp = 0.5, Kr = 2000;
+float32 index = 0, m = 200, Kp = 15, Kr = 2000;
 
 int role = 0, allow_role = 0;
 // Flags for detecting ZCD
@@ -604,7 +604,7 @@ void CurrrentControlNoPV()
     // outt0 = 940.0 * (e0 - 1.9965967452 * e1 + 0.9967536521 * e2) + 2.0 * outt1 - 1.00015792 * outt2;
     // outt0 = Kp*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
     // outt0 = Kp * (e0 - 1.996 * e1 + 0.9961579133 * e2) + 2.0 * outt1 - 1.000157914 * outt2;
-    outt0 = Kp*e0 + (-2*Kp + Kr*Ts)*e1 + (1.000157914*Kp - Kr*Ts)*e2 + 2.0 * outt1 - 1.000157914 * outt2;
+    outt0 = (Kp*e0 + (-2*Kp + Kr*Ts)*e1 + (1.000157914*Kp - Kr*Ts)*e2)/m + 2.0 * outt1 - 1.000157914 * outt2;
 
     // Update for the next loop
     e2 = e1;
@@ -612,8 +612,8 @@ void CurrrentControlNoPV()
     outt2 = outt1;
     outt1 = outt0;
 
-    outt = (float32)outt0 / m;
-    if (outt > 1 || outt < -1)
+    outt = (float32)outt0;
+    if (outt > 2 || outt < -2)
         reset_after_on_role();
 }
 

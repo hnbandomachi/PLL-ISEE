@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v20.2.1                     
 ******************************************************************************
->> Linked Tue Apr 13 10:46:50 2021
+>> Linked Tue Apr 13 16:19:39 2021
 
 OUTPUT FILE NAME:   <PLL-ISEE.out>
 ENTRY POINT SYMBOL: "_c_int00"  address: 0000d819
@@ -15,8 +15,8 @@ PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
   RAMM0                 00000122   000002de  00000096  00000248  RWIX
   RAMD0                 0000b000   00000800  00000000  00000800  RWIX
-  RAMGS0                0000c000   00001000  00000ffc  00000004  RWIX
-  RAMGS1                0000d000   00001000  0000096e  00000692  RWIX
+  RAMGS0                0000c000   00001000  00001000  00000000  RWIX
+  RAMGS1                0000d000   00001000  00000974  0000068c  RWIX
   RAMGS2                0000e000   00001000  00000000  00001000  RWIX
   RAMGS3                0000f000   00001000  00000000  00001000  RWIX
   RAMGS4                00010000   00001000  00000000  00001000  RWIX
@@ -592,19 +592,18 @@ CpuSysRegsFile
 *          1    0005d300    00000082     UNINITIALIZED
                   0005d300    00000082     F2837xS_GlobalVariableDefs.obj (CpuSysRegsFile)
 
-.text.1    0    0000c000    00000ffc     
+.text.1    0    0000c000    00001000     
                   0000c000    00000585     F2837xS_DefaultISR.obj (.text:retain)
                   0000c585    00000339     F2837xS_SysCtrl.obj (.text)
-                  0000c8be    000002de     main.obj (.text)
-                  0000cb9c    00000289     SPLL_1ph_SOGI_F.obj (.text)
-                  0000ce25    000000fd     F2837xS_EPwm.obj (.text)
-                  0000cf22    0000009c     rts2800_fpu32.lib : fd_add28.asm.obj (.text)
-                  0000cfbe    00000029                       : exit.c.obj (.text)
-                  0000cfe7    00000012                       : args_main.c.obj (.text)
-                  0000cff9    00000002                       : pre_init.c.obj (.text)
-                  0000cffb    00000001                       : startup.c.obj (.text)
+                  0000c8be    000002e8     main.obj (.text)
+                  0000cba6    00000289     SPLL_1ph_SOGI_F.obj (.text)
+                  0000ce2f    000000fd     F2837xS_EPwm.obj (.text)
+                  0000cf2c    0000009c     rts2800_fpu32.lib : fd_add28.asm.obj (.text)
+                  0000cfc8    00000029                       : exit.c.obj (.text)
+                  0000cff1    0000000e                       : fd_sub28.asm.obj (.text)
+                  0000cfff    00000001                       : startup.c.obj (.text)
 
-.text.2    0    0000d000    0000096e     
+.text.2    0    0000d000    00000974     
                   0000d000    00000244     F2837xS_Gpio.obj (.text)
                   0000d244    00000216     main.obj (.text:retain)
                   0000d45a    000000f1     F2837xS_Adc.obj (.text)
@@ -622,8 +621,9 @@ CpuSysRegsFile
                   0000d904    0000001d                       : memcpy.c.obj (.text)
                   0000d921    0000001c                       : fs_tofdfpu32.asm.obj (.text)
                   0000d93d    0000001a                       : fd_tou28.asm.obj (.text)
-                  0000d957    0000000e                       : fd_sub28.asm.obj (.text)
-                  0000d965    00000009                       : _lock.c.obj (.text)
+                  0000d957    00000012                       : args_main.c.obj (.text)
+                  0000d969    00000009                       : _lock.c.obj (.text)
+                  0000d972    00000002                       : pre_init.c.obj (.text)
 
 .ebss      1    00008000    000000fc     UNINITIALIZED
                   00008000    000000c6     main.obj (.ebss)
@@ -642,7 +642,7 @@ MODULE SUMMARY
        ------                           ----   ----------------   ------------------
     .\
        F2837xS_GlobalVariableDefs.obj   0      0                  9149              
-       main.obj                         1268   136                218               
+       main.obj                         1278   136                218               
        F2837xS_DefaultISR.obj           1413   0                  0                 
        F2837xS_SysCtrl.obj              825    0                  0                 
        SPLL_1ph_SOGI_F.obj              649    0                  0                 
@@ -655,7 +655,7 @@ MODULE SUMMARY
        F2837xS_usDelay.obj              4      0                  0                 
        F2837xS_CodeStartBranch.obj      2      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           5437   584                9391              
+       Total:                           5447   584                9391              
                                                                                     
     D:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib/rts2800_fpu32.lib
        fd_add28.asm.obj                 156    0                  0                 
@@ -681,7 +681,7 @@ MODULE SUMMARY
                                                                                     
        Stack:                           0      0                  512               
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     6512   608                9913              
+       Grand Total:                     6522   608                9913              
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -932,11 +932,11 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 page  address   name                                  
 ----  -------   ----                                  
 abs   ffffffff  .text                                 
-0     0000cfbe  C$$EXIT                               
-0     0000cf22  FD$$ADD                               
+0     0000cfc8  C$$EXIT                               
+0     0000cf2c  FD$$ADD                               
 0     0000d54b  FD$$DIV                               
 0     0000d65e  FD$$MPY                               
-0     0000d957  FD$$SUB                               
+0     0000cff1  FD$$SUB                               
 0     0000d8e1  FD$$TOFS                              
 0     0000d93d  FD$$TOU                               
 0     0000d5d6  FS$$DIV                               
@@ -1152,20 +1152,20 @@ abs   ffffffff  .text
 1     000080ec  _Ig_watch                             
 0     0000c75c  _InitAuxPll                           
 0     0000d6e1  _InitCpuTimers                        
-0     0000cee8  _InitEPwm10Gpio                       
-0     0000cefb  _InitEPwm11Gpio                       
-0     0000cf0f  _InitEPwm12Gpio                       
-0     0000ce3e  _InitEPwm1Gpio                        
+0     0000cef2  _InitEPwm10Gpio                       
+0     0000cf05  _InitEPwm11Gpio                       
+0     0000cf19  _InitEPwm12Gpio                       
+0     0000ce48  _InitEPwm1Gpio                        
 0     0000ca0d  _InitEPwm2Example                     
-0     0000ce50  _InitEPwm2Gpio                        
-0     0000ce62  _InitEPwm3Gpio                        
-0     0000ce76  _InitEPwm4Gpio                        
-0     0000ce8a  _InitEPwm5Gpio                        
-0     0000ce9c  _InitEPwm6Gpio                        
-0     0000ceae  _InitEPwm7Gpio                        
-0     0000cec2  _InitEPwm8Gpio                        
-0     0000ced6  _InitEPwm9Gpio                        
-0     0000ce25  _InitEPwmGpio                         
+0     0000ce5a  _InitEPwm2Gpio                        
+0     0000ce6c  _InitEPwm3Gpio                        
+0     0000ce80  _InitEPwm4Gpio                        
+0     0000ce94  _InitEPwm5Gpio                        
+0     0000cea6  _InitEPwm6Gpio                        
+0     0000ceb8  _InitEPwm7Gpio                        
+0     0000cecc  _InitEPwm8Gpio                        
+0     0000cee0  _InitEPwm9Gpio                        
+0     0000ce2f  _InitEPwmGpio                         
 0     0000d000  _InitGpio                             
 0     0000c5b6  _InitPeripheralClocks                 
 0     0000d86f  _InitPieCtrl                          
@@ -1219,9 +1219,9 @@ abs   ffffffff  .text
 0     0000c226  _SPIB_TX_ISR                          
 0     0000c49c  _SPIC_RX_ISR                          
 0     0000c4a6  _SPIC_TX_ISR                          
-0     0000ccc1  _SPLL_1ph_SOGI_F_FUNC                 
-0     0000cc25  _SPLL_1ph_SOGI_F_coeff_update         
-0     0000cb9c  _SPLL_1ph_SOGI_F_init                 
+0     0000cccb  _SPLL_1ph_SOGI_F_FUNC                 
+0     0000cc2f  _SPLL_1ph_SOGI_F_coeff_update         
+0     0000cba6  _SPLL_1ph_SOGI_F_init                 
 0     0000c88e  _STANDBY                              
 0     0000c53c  _SYS_PLL_SLIP_ISR                     
 1     00007200  _SciaRegs                             
@@ -1234,7 +1234,7 @@ abs   ffffffff  .text
 0     0000c661  _SeizeFlashPump_Bank1                 
 0     0000c67a  _ServiceDog                           
 0     0000c983  _SetupADCEpwm                         
-0     0000cb9b  _SingleStagePV                        
+0     0000cba5  _SingleStagePV                        
 1     00006100  _SpiaRegs                             
 1     00006110  _SpibRegs                             
 1     00006120  _SpicRegs                             
@@ -1292,19 +1292,19 @@ abs   ffffffff  ___c_args__
 abs   ffffffff  ___etext__                            
 abs   ffffffff  ___pinit__                            
 abs   ffffffff  ___text__                             
-0     0000cfe7  __args_main                           
+0     0000d957  __args_main                           
 1     000080f8  __lock                                
-0     0000d96d  __nop                                 
-0     0000d969  __register_lock                       
-0     0000d965  __register_unlock                     
+0     0000d971  __nop                                 
+0     0000d96d  __register_lock                       
+0     0000d969  __register_unlock                     
 1     00000400  __stack                               
-0     0000cffb  __system_post_cinit                   
-0     0000cff9  __system_pre_init                     
+0     0000cfff  __system_post_cinit                   
+0     0000d972  __system_pre_init                     
 1     000080fa  __unlock                              
-0     0000cfbe  _abort                                
+0     0000cfc8  _abort                                
 1     0000800c  _allow_role                           
 0     0000d819  _c_int00                              
-0     0000cb71  _check_role                           
+0     0000cb7b  _check_role                           
 1     00008006  _cnt_Prev                             
 1     00008005  _cnt_role                             
 1     00008007  _cnt_temp                             
@@ -1318,7 +1318,7 @@ abs   ffffffff  ___text__
 1     00008026  _e1                                   
 1     00008028  _e2                                   
 0     0000d244  _epwm2_isr                            
-0     0000cfc0  _exit                                 
+0     0000cfca  _exit                                 
 1     00008036  _index                                
 1     0000803e  _invSine                              
 1     00008040  _invSinePrev                          
@@ -1331,7 +1331,7 @@ abs   ffffffff  ___text__
 1     00008032  _outt2                                
 1     0000802c  _outtPrev                             
 1     00008022  _phi                                  
-0     0000cb87  _reset_after_on_role                  
+0     0000cb91  _reset_after_on_role                  
 1     0000800b  _role                                 
 0     0000d7c0  _sin                                  
 0     0000d7c0  _sinf                                 
@@ -1521,32 +1521,31 @@ page  address   name
 0     0000c9ef  _Gpio_setup1                          
 0     0000ca0d  _InitEPwm2Example                     
 0     0000cabc  _CurrrentControlNoPV                  
-0     0000cb71  _check_role                           
-0     0000cb87  _reset_after_on_role                  
-0     0000cb9b  _SingleStagePV                        
-0     0000cb9c  _SPLL_1ph_SOGI_F_init                 
-0     0000cc25  _SPLL_1ph_SOGI_F_coeff_update         
-0     0000ccc1  _SPLL_1ph_SOGI_F_FUNC                 
-0     0000ce25  _InitEPwmGpio                         
-0     0000ce3e  _InitEPwm1Gpio                        
-0     0000ce50  _InitEPwm2Gpio                        
-0     0000ce62  _InitEPwm3Gpio                        
-0     0000ce76  _InitEPwm4Gpio                        
-0     0000ce8a  _InitEPwm5Gpio                        
-0     0000ce9c  _InitEPwm6Gpio                        
-0     0000ceae  _InitEPwm7Gpio                        
-0     0000cec2  _InitEPwm8Gpio                        
-0     0000ced6  _InitEPwm9Gpio                        
-0     0000cee8  _InitEPwm10Gpio                       
-0     0000cefb  _InitEPwm11Gpio                       
-0     0000cf0f  _InitEPwm12Gpio                       
-0     0000cf22  FD$$ADD                               
-0     0000cfbe  C$$EXIT                               
-0     0000cfbe  _abort                                
-0     0000cfc0  _exit                                 
-0     0000cfe7  __args_main                           
-0     0000cff9  __system_pre_init                     
-0     0000cffb  __system_post_cinit                   
+0     0000cb7b  _check_role                           
+0     0000cb91  _reset_after_on_role                  
+0     0000cba5  _SingleStagePV                        
+0     0000cba6  _SPLL_1ph_SOGI_F_init                 
+0     0000cc2f  _SPLL_1ph_SOGI_F_coeff_update         
+0     0000cccb  _SPLL_1ph_SOGI_F_FUNC                 
+0     0000ce2f  _InitEPwmGpio                         
+0     0000ce48  _InitEPwm1Gpio                        
+0     0000ce5a  _InitEPwm2Gpio                        
+0     0000ce6c  _InitEPwm3Gpio                        
+0     0000ce80  _InitEPwm4Gpio                        
+0     0000ce94  _InitEPwm5Gpio                        
+0     0000cea6  _InitEPwm6Gpio                        
+0     0000ceb8  _InitEPwm7Gpio                        
+0     0000cecc  _InitEPwm8Gpio                        
+0     0000cee0  _InitEPwm9Gpio                        
+0     0000cef2  _InitEPwm10Gpio                       
+0     0000cf05  _InitEPwm11Gpio                       
+0     0000cf19  _InitEPwm12Gpio                       
+0     0000cf2c  FD$$ADD                               
+0     0000cfc8  C$$EXIT                               
+0     0000cfc8  _abort                                
+0     0000cfca  _exit                                 
+0     0000cff1  FD$$SUB                               
+0     0000cfff  __system_post_cinit                   
 0     0000d000  _InitGpio                             
 0     0000d040  _GPIO_SetupPinMux                     
 0     0000d0cc  _GPIO_SetupPinOptions                 
@@ -1583,10 +1582,11 @@ page  address   name
 0     0000d904  _memcpy                               
 0     0000d921  FS$$TOFD                              
 0     0000d93d  FD$$TOU                               
-0     0000d957  FD$$SUB                               
-0     0000d965  __register_unlock                     
-0     0000d969  __register_lock                       
-0     0000d96d  __nop                                 
+0     0000d957  __args_main                           
+0     0000d969  __register_unlock                     
+0     0000d96d  __register_lock                       
+0     0000d971  __nop                                 
+0     0000d972  __system_pre_init                     
 1     00000400  __stack                               
 1     00000600  __STACK_END                           
 1     00000b00  _AdcaResultRegs                       
