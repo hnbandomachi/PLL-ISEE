@@ -13,13 +13,13 @@
 //
 // Defines
 //
-#define RED 10U
-#define FED 10U
+#define RED 50U
+#define FED 50U
 #define GRID_FREQ 50
-#define ISR_FREQUENCY 25000
+#define ISR_FREQUENCY 20000
 #define PI 3.14159265359
 
-#define PWM_PRD 2000 // 25 kHz
+#define PWM_PRD 2500 // 20 kHz
 #define sample_watch 1
 
 #define REFERENCE_VDAC 1
@@ -58,8 +58,10 @@ float32 Ipv, IpvPrev;
 
 float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
 float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
-float32 outt = 0.0, outtPrev = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0, Ts = 1.0/ISR_FREQUENCY;
-float32 index = 0, m = 200, Kp = 15, Kr = 2000;
+float32 outt = 0.0, outtPrev = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0, Ts = 1.0 / ISR_FREQUENCY;
+float32 index = 0, m = 2, Kp = 0.5, Kr = 1000, wc = 0.1;
+float wn = 2 * PI * GRID_FREQ;
+float b0, b1, b2, a1, a2;
 
 int role = 0, allow_role = 0;
 // Flags for detecting ZCD
@@ -175,7 +177,7 @@ void main(void)
     // Configure CPU-Timer 0 to interrupt every 20us
     // 200MHz CPU Freq, 1 second Period (in uSeconds)
     //
-    ConfigCpuTimer(&CpuTimer0, 200, 10);
+    ConfigCpuTimer(&CpuTimer0, 200, 1000);
 
     //
     // To ensure precise timing, use write-only instructions to write to the
@@ -221,12 +223,18 @@ void main(void)
     PieCtrlRegs.PIEIER3.bit.INTx8 = 1;
     PieCtrlRegs.PIEIER3.bit.INTx6 = 1;
 
-    EINT; // Enable Global interrupt INTM
+    EINT; // Enable Global interrupt INTMxx
     ERTM; // Enable Global realtime interrupt DBGM
 
     // Put the applicated source here
     SPLL_1ph_SOGI_F_init(GRID_FREQ, ((float)(1.0 / ISR_FREQUENCY)), &spll1);
     SPLL_1ph_SOGI_F_coeff_update(((float)(1.0 / ISR_FREQUENCY)), (float)(2 * PI * GRID_FREQ), &spll1);
+
+    b0 = ((4 + 4 * Ts * wc + wn * wn * Ts * Ts) * Kp + 4 * Kr * Ts * wc) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
+    b1 = ((2 * wn * wn * Ts * Ts - 8) * Kp) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
+    b2 = ((4 - 4 * Ts * wc + wn * wn * Ts * Ts) * Kp - 4 * Kr * Ts * wc) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
+    a1 = (2 * wn * wn * Ts * Ts - 8) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
+    a2 = (4 - 4 * Ts * wc + wn * wn * Ts * Ts) / ((4 + 4 * Ts * wc + wn * wn * Ts * Ts));
 
     do
     {
@@ -485,8 +493,8 @@ __interrupt void epwm2_isr(void)
     // Calculate the real value
     Vg = (float32)(VgSample - 2512.0) * 0.2344322344;
     Ig = (float32)(IgSample - 2512.0) * 0.01917211329;
-        
-    Ipv = (float32)(IpvSample - 2512)*0.05;
+
+    Ipv = (float32)(IpvSample - 2512) * 0.05;
 
     spll1.u[0] = Vg * 0.0025;
     SPLL_1ph_SOGI_F_FUNC(&spll1);
@@ -510,7 +518,7 @@ __interrupt void epwm2_isr(void)
         // outt = 0;
     }
 
-    if(abs(outt - outtPrev) > 2)
+    if (abs(outt - outtPrev) > 2)
     {
         outt = outtPrev;
     }
@@ -571,15 +579,21 @@ __interrupt void cpu_timer0_isr(void)
 {
 
     CpuTimer0.InterruptCount++;
-    Vpv_temp += (float32)(VpvSample - 2512)*0.202;
-    if(cnt_temp == 200)
+    b0 = ((4 + 4 * Ts * wc + wn * wn * Ts * Ts) * Kp + 4 * Kr * Ts * wc) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
+    b1 = ((2 * wn * wn * Ts * Ts - 8) * Kp) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
+    b2 = ((4 - 4 * Ts * wc + wn * wn * Ts * Ts) * Kp - 4 * Kr * Ts * wc) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
+    a1 = (2 * wn * wn * Ts * Ts - 8) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
+    a2 = (4 - 4 * Ts * wc + wn * wn * Ts * Ts) / ((4 + 4 * Ts * wc + wn * wn * Ts * Ts));
+    Vpv_temp += (float32)(VpvSample - 2512) * 0.202;
+    if (cnt_temp == 200)
     {
-        Vpv = Vpv_temp/200.0;
-        if(cnt_Prev)
+        Vpv = Vpv_temp / 200.0;
+        if (cnt_Prev)
         {
             VpvPrev = Vpv;
         }
-        if(abs(Vpv - VpvPrev) > 10) Vpv = VpvPrev;
+        if (abs(Vpv - VpvPrev) > 10)
+            Vpv = VpvPrev;
         Vpv_temp = 0;
         cnt_temp = 0;
         VpvPrev = Vpv;
@@ -600,11 +614,12 @@ void CurrrentControlNoPV()
     //     Ig = 0;
     // if (invSinePrev < 0 && invSine > 0)
     //     Ig = 0;
-    e0 = Iref - Ig;
+    e0 = Iref - Ig;    
     // outt0 = 940.0 * (e0 - 1.9965967452 * e1 + 0.9967536521 * e2) + 2.0 * outt1 - 1.00015792 * outt2;
     // outt0 = Kp*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
     // outt0 = Kp * (e0 - 1.996 * e1 + 0.9961579133 * e2) + 2.0 * outt1 - 1.000157914 * outt2;
-    outt0 = (Kp*e0 + (-2*Kp + Kr*Ts)*e1 + (1.000157914*Kp - Kr*Ts)*e2)/m + 2.0 * outt1 - 1.000157914 * outt2;
+    // outt0 = (Kp * e0 + (-2 * Kp + Kr * Ts) * e1 + (1.000157914 * Kp - Kr * Ts) * e2) / m + 2.0 * outt1 - 1.000157914 * outt2;
+    outt0 = b0 * e0 + b1 * e1 + b2 * e2 - a1 * outt1 - a2 * outt2;
 
     // Update for the next loop
     e2 = e1;
@@ -612,8 +627,8 @@ void CurrrentControlNoPV()
     outt2 = outt1;
     outt1 = outt0;
 
-    outt = (float32)outt0;
-    if (outt > 2 || outt < -2)
+    outt = (float32)outt0 / m;
+    if (outt > 1 || outt < -1)
         reset_after_on_role();
 }
 
