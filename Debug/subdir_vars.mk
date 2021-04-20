@@ -20,6 +20,7 @@ C_SRCS += \
 ../F2837xS_PieVect.c \
 ../F2837xS_SysCtrl.c \
 ../SPLL_1ph_SOGI_F.c \
+../T-type.c \
 ../main.c \
 ../sin_tab.c 
 
@@ -34,6 +35,7 @@ C_DEPS += \
 ./F2837xS_PieVect.d \
 ./F2837xS_SysCtrl.d \
 ./SPLL_1ph_SOGI_F.d \
+./T-type.d \
 ./main.d \
 ./sin_tab.d 
 
@@ -50,6 +52,7 @@ OBJS += \
 ./F2837xS_SysCtrl.obj \
 ./F2837xS_usDelay.obj \
 ./SPLL_1ph_SOGI_F.obj \
+./T-type.obj \
 ./main.obj \
 ./sin_tab.obj 
 
@@ -70,6 +73,7 @@ OBJS__QUOTED += \
 "F2837xS_SysCtrl.obj" \
 "F2837xS_usDelay.obj" \
 "SPLL_1ph_SOGI_F.obj" \
+"T-type.obj" \
 "main.obj" \
 "sin_tab.obj" 
 
@@ -84,6 +88,7 @@ C_DEPS__QUOTED += \
 "F2837xS_PieVect.d" \
 "F2837xS_SysCtrl.d" \
 "SPLL_1ph_SOGI_F.d" \
+"T-type.d" \
 "main.d" \
 "sin_tab.d" 
 
@@ -102,6 +107,7 @@ C_SRCS__QUOTED += \
 "../F2837xS_PieVect.c" \
 "../F2837xS_SysCtrl.c" \
 "../SPLL_1ph_SOGI_F.c" \
+"../T-type.c" \
 "../main.c" \
 "../sin_tab.c" 
 

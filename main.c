@@ -13,8 +13,8 @@
 //
 // Defines
 //
-#define RED 50U
-#define FED 50U
+#define RED 20U
+#define FED 20U
 #define GRID_FREQ 50
 #define ISR_FREQUENCY 20000
 #define PI 3.14159265359
@@ -57,15 +57,11 @@ float32 Vpv, VpvPrev;
 float32 Ipv, IpvPrev;
 
 float32 Iref = 0.0, I0 = 1, Itemp = 0, phi = 0.0;
-float32 e0 = 0.0, e1 = 0.0, e2 = 0.0;
-float32 outt = 0.0, outtPrev = 0.0, outt0 = 0.0, outt1 = 0.0, outt2 = 0.0, Ts = 1.0 / ISR_FREQUENCY;
-float32 index = 0, m = 2, Kp = 0.5, Kr = 1000, wc = 0.1;
-float wn = 2 * PI * GRID_FREQ;
-float b0, b1, b2, a1, a2;
+float32 outtt = 0.0, outt[11], outtt, e[11], m = 8;
 
-int role = 0, allow_role = 0;
+int16 role = 0, allow_role = 0, i = 0;
 // Flags for detecting ZCD
-float invSine, invSinePrev;
+float32 invSine, invSinePrev;
 
 //
 // Function Prototypes
@@ -228,13 +224,7 @@ void main(void)
 
     // Put the applicated source here
     SPLL_1ph_SOGI_F_init(GRID_FREQ, ((float)(1.0 / ISR_FREQUENCY)), &spll1);
-    SPLL_1ph_SOGI_F_coeff_update(((float)(1.0 / ISR_FREQUENCY)), (float)(2 * PI * GRID_FREQ), &spll1);
-
-    b0 = ((4 + 4 * Ts * wc + wn * wn * Ts * Ts) * Kp + 4 * Kr * Ts * wc) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
-    b1 = ((2 * wn * wn * Ts * Ts - 8) * Kp) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
-    b2 = ((4 - 4 * Ts * wc + wn * wn * Ts * Ts) * Kp - 4 * Kr * Ts * wc) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
-    a1 = (2 * wn * wn * Ts * Ts - 8) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
-    a2 = (4 - 4 * Ts * wc + wn * wn * Ts * Ts) / ((4 + 4 * Ts * wc + wn * wn * Ts * Ts));
+    SPLL_1ph_SOGI_F_coeff_update(((float)(1.0 / ISR_FREQUENCY)), (float)(2 * PI * GRID_FREQ), &spll1);   
 
     do
     {
@@ -517,13 +507,9 @@ __interrupt void epwm2_isr(void)
         cnt_role = 0;
         // outt = 0;
     }
+    
 
-    if (abs(outt - outtPrev) > 2)
-    {
-        outt = outtPrev;
-    }
-
-    if (outt > 0.0000)
+    if (outtt > 0.0000)
     {
         EPwm6Regs.CMPA.bit.CMPA = 0;
     }
@@ -531,21 +517,19 @@ __interrupt void epwm2_isr(void)
     {
         EPwm6Regs.CMPA.bit.CMPA = PWM_PRD;
     }
-    if (outt <= 0.0000)
+    if (outtt <= 0.0000)
     {
-        outt += 1.00000;
+        outtt += 1.00000;
     }
-    EPwm7Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt - 1.00000); // Set compare A value
-    EPwm8Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outt);           // Set compare A value
+    EPwm7Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outtt - 1.00000); // Set compare A value
+    EPwm8Regs.CMPA.bit.CMPA = (int)PWM_PRD * (2.0 * outtt);           // Set compare A value
     invSinePrev = invSine;
-    VpvPrev = Vpv;
-    IpvPrev = Ipv;
-    outtPrev = outt;
+    
     // SingleStagePV();
 
     DAC_PTR[DACA]->DACVALS.all = Iref * 93 + 2000;
     DAC_PTR[DACB]->DACVALS.all = Ig * 93 + 2000;
-    DAC_PTR[DACC]->DACVALS.all = outt * 2000 + 2000;
+    DAC_PTR[DACC]->DACVALS.all = outt[0] * 2000 + 2000;
     // DacbRegs.DACVALS.all = outt * 1000 + 1500;
 
     // Watch variables
@@ -578,12 +562,7 @@ __interrupt void epwm2_isr(void)
 __interrupt void cpu_timer0_isr(void)
 {
 
-    CpuTimer0.InterruptCount++;
-    b0 = ((4 + 4 * Ts * wc + wn * wn * Ts * Ts) * Kp + 4 * Kr * Ts * wc) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
-    b1 = ((2 * wn * wn * Ts * Ts - 8) * Kp) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
-    b2 = ((4 - 4 * Ts * wc + wn * wn * Ts * Ts) * Kp - 4 * Kr * Ts * wc) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
-    a1 = (2 * wn * wn * Ts * Ts - 8) / (4 + 4 * Ts * wc + wn * wn * Ts * Ts);
-    a2 = (4 - 4 * Ts * wc + wn * wn * Ts * Ts) / ((4 + 4 * Ts * wc + wn * wn * Ts * Ts));
+    CpuTimer0.InterruptCount++;    
     Vpv_temp += (float32)(VpvSample - 2512) * 0.202;
     if (cnt_temp == 200)
     {
@@ -605,30 +584,80 @@ __interrupt void cpu_timer0_isr(void)
 
 void CurrrentControlNoPV()
 {
+    // PR current controller
     if (Itemp <= I0 && invSinePrev > 0 && invSine < 0)
     {
-        Itemp += 0.02;
+        Itemp += 0.5;
     }
-    Iref = I0 * sin(spll1.theta[0] + phi * 2.0 * PI / 360.0);
-    // if (invSinePrev > 0 && invSine < 0)
-    //     Ig = 0;
-    // if (invSinePrev < 0 && invSine > 0)
-    //     Ig = 0;
-    e0 = Iref - Ig;    
-    // outt0 = 940.0 * (e0 - 1.9965967452 * e1 + 0.9967536521 * e2) + 2.0 * outt1 - 1.00015792 * outt2;
-    // outt0 = Kp*(e0 - 1.960000000*e1 + 0.9601579195*e2) + 2.0*outt1 - 1.00015792* outt2;
-    // outt0 = Kp * (e0 - 1.996 * e1 + 0.9961579133 * e2) + 2.0 * outt1 - 1.000157914 * outt2;
-    // outt0 = (Kp * e0 + (-2 * Kp + Kr * Ts) * e1 + (1.000157914 * Kp - Kr * Ts) * e2) / m + 2.0 * outt1 - 1.000157914 * outt2;
-    outt0 = b0 * e0 + b1 * e1 + b2 * e2 - a1 * outt1 - a2 * outt2;
+    Iref = I0 * sin(spll1.theta[0] + phi * 2 * PI / 360); // 50 Hz is here???
+    e[0] = Iref - Ig;
+    // This line is found in PRcurrent.m
 
-    // Update for the next loop
-    e2 = e1;
-    e1 = e0;
-    outt2 = outt1;
-    outt1 = outt0;
+    // outt0 = 150 * (e0 - 1.960000000 * e1 + 0.9601579195 * e2) + 2.0 * outt1 - 1.00015792 * outt2;   // ok
+    // outt0 = 20 * (e0 - 1.996000000 * e1 + 0.9961579133* e2) + 2.0 * outt1 - 1.000157914 * outt2;
+    // outt0 = Kp*e0 + (-2*Kp + Ts*Kr)*e1 + (1.000157914*Kp - Ts*Kr)*e2 + 2.0 * outt1 - 1.000157914 * outt2;
+    // outt0 = 2*cos(2*GRID_FREQ*PI*Ts)*outt1 - outt2 + (Kp+Kr)*e0 + (-2*Kp-Kr)*cos(2*GRID_FREQ*PI*Ts)*e1 + Kp*e2;
+    // outt0 = (Kp*e0 + (-2*Kp + Kr*Ts)*e1 + (1.000157914*Kp - Kr*Ts)*e2)/m + 2.0 * outt1 - 1.000157914 * outt2;
+    // outt0 = b0 * e0 + b1 * e1 + b2 * e2 - a1 * outt1 - a2 * outt2;
+     // Tustin
+    // outt[0] = 1.006236202/m*(       e[0] \
+    //                 - 9.961593994   *e[1] \
+    //                 + 44.68083736   *e[2] \
+    //                 - 118.8285844   *e[3] \
+    //                 + 207.5107623   *e[4] \
+    //                 - 248.6303514   *e[5] \
+    //                 + 206.9929965   *e[6] \
+    //                 - 118.2362694   *e[7] \
+    //                 + 44.34711388   *e[8] \
+    //                 - 9.862485794   *e[9] \
+    //                 + 0.9875748637  *e[10]) \
+    //             -(  - 9.973974072   *outt[1] \
+    //                 + 44.79198081   *outt[2] \
+    //                 - 119.2723427   *outt[3] \
+    //                 + 208.543712    *outt[4] \
+    //                 - 250.1808628   *outt[5]\
+    //                 + 208.543712    *outt[6] \
+    //                 - 119.2708942   *outt[7] \
+    //                 + 44.7911648    *outt[8]\
+    //                 - 9.973731806   *outt[9] \
+    //                 + 0.9999696372  *outt[10]); 
 
-    outt = (float32)outt0 / m;
-    if (outt > 1 || outt < -1)
+    // outt[0] = 1.0051190715/m*(       e[0] \
+    //                 - 5.984275899   *e[1] \
+    //                 + 14.92695412    *e[2] \
+    //                 - 19.86499540   *e[3] \
+    //                 + 14.87602707   *e[4] \
+    //                 - 5.943504858    *e[5] \
+    //                 + 0.9897949652    *e[6]) \
+                    
+    //             -(  - 5.994458246   *outt[1] \
+    //                 + 14.97782033   *outt[2] \
+    //                 - 19.96668584   *outt[3] \
+    //                 + 14.97772452    *outt[4] \
+    //                 - 5.994381551   *outt[5]\
+    //                 + 0.9999808072    *outt[6]); 
+
+    outt[0] = 0.5045596259/m*(       e[0] \
+                    - 3.980336993   *e[1] \
+                    + 5.942609990    *e[2] \
+                    - 3.944185666   *e[3] \
+                    + 0.9819128943   *e[4]) \
+                    
+                -(  - 3.998407777   *outt[1] \
+                    + 5.996802201   *outt[2] \
+                    - 3.998380599   *outt[3] \
+                    + 0.9999864020    *outt[4]); 
+
+    // Update for next loop
+    for(i = 0; i < 9; i++)
+    {
+        outt[10-i] = outt[10-1-i];
+        e[10-i] = e[10-1-i];
+    }
+    
+    // outt   = (double)m*sin( step_sine * 2 * PI / n_sine);
+    outtt = outt[0];
+    if (outtt > 100 || outtt < -100)
         reset_after_on_role();
 }
 
@@ -647,14 +676,15 @@ int check_role()
 
 void reset_after_on_role()
 {
+    
     Itemp = 0;
-    outt = 0.0;
-    outt0 = 0.0;
-    outt1 = 0.0;
-    outt2 = 0.0;
-    e0 = 0.0;
-    e1 = 0.0;
-    e2 = 0.0;
+    outtt = 0.0;
+    for(i= 0; i < 10; i++)
+    {
+        outt[i]=0;
+        e[i] = 0;
+    }
+    
 }
 
 void SingleStagePV()
